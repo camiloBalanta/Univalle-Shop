@@ -1,0 +1,239 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  # Búsqueda Microservice + Frontend
+  search-service:
+    build:
+      context: ./microser-busquedad
+      dockerfile: Dockerfile
+    container_name: ms-busqueda-api
+    ports:
+      - '${SEARCH_SERVICE_HOST_PORT:-3001}:${SEARCH_SERVICE_PORT:-3001}'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${SEARCH_SERVICE_PORT:-3001}
+      - MONGO_URI=${SEARCH_MONGO_URI:-mongodb://search-mongo:27017/microsearch}
+      - MONGO_DB_NAME=microsearch
+    depends_on:
+      - search-mongo
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+
+  search-mongo:
+    image: mongo:7.0
+    container_name: search-mongo
+    environment:
+      MONGO_INITDB_DATABASE: microsearch
+    volumes:
+      - search-mongo-data:/data/db
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Catálogo Microservice
+  catalog-service:
+    build:
+      context: ./microser-catalogo
+      dockerfile: Dockerfile
+    container_name: ms-catalogo-api
+    ports:
+      - '${CATALOG_SERVICE_HOST_PORT:-3000}:${CATALOG_SERVICE_PORT:-3000}'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${CATALOG_SERVICE_PORT:-3000}
+      - MONGO_URI=${CATALOG_MONGO_URI:-mongodb://catalog-mongo:27017/catalogo}
+    depends_on:
+      - catalog-mongo
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+
+  catalog-mongo:
+    image: mongo:7.0
+    container_name: catalog-mongo
+    environment:
+      MONGO_INITDB_DATABASE: catalogo
+    volumes:
+      - catalog-mongo-data:/data/db
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Pagos Microservice
+  payment-service:
+    build:
+      context: ./microser-pagos
+      dockerfile: Dockerfile
+    container_name: ms-pagos-api
+    ports:
+      - '${PAYMENT_SERVICE_HOST_PORT:-3002}:${PAYMENT_SERVICE_PORT:-3000}'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${PAYMENT_SERVICE_PORT:-3000}
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./microser-pagos/logs:/app/logs
+    logging: *default-logging
+
+  # Pedidos Microservice + Frontend
+  orders-service:
+    build:
+      context: ./microser-pedidos
+      dockerfile: Dockerfile
+    container_name: ms-pedidos-api
+    ports:
+      - '${ORDERS_SERVICE_HOST_PORT:-3004}:${ORDERS_SERVICE_PORT:-3004}'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${ORDERS_SERVICE_PORT:-3004}
+      - MONGO_URI=${ORDERS_MONGO_URI:-mongodb://orders-mongo:27017/pedidos}
+    depends_on:
+      - orders-mongo
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+
+  orders-mongo:
+    image: mongo:7.0
+    container_name: orders-mongo
+    environment:
+      MONGO_INITDB_DATABASE: pedidos
+    volumes:
+      - orders-mongo-data:/data/db
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Usuarios Microservice
+  users-service:
+    build:
+      context: ./microser-usuarios
+      dockerfile: Dockerfile
+    container_name: ms-usuarios-api
+    ports:
+      - '${USERS_SERVICE_HOST_PORT:-3003}:${USERS_SERVICE_PORT:-3000}'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${USERS_SERVICE_PORT:-3000}
+      - MONGO_URI=${USERS_MONGO_URI:-mongodb://users-mongo:27017/usuarios}
+      - MONGODB_URI=${USERS_MONGODB_URI:-mongodb://users-mongo:27017/usuarios}
+    depends_on:
+      - users-mongo
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+
+  users-mongo:
+    image: mongo:7.0
+    container_name: users-mongo
+    environment:
+      MONGO_INITDB_DATABASE: usuarios
+    volumes:
+      - users-mongo-data:/data/db
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Recomendación Microservice
+  recommendation-service:
+    build:
+      context: ./microser-recomendacion_
+      dockerfile: Dockerfile
+    container_name: ms-recomendacion-api
+    ports:
+      - '${RECOMMENDATION_SERVICE_HOST_PORT:-3006}:${RECOMMENDATION_SERVICE_PORT:-3000}'
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=${RECOMMENDATION_SERVICE_PORT:-3000}
+      - MONGO_URI=${RECOMMENDATION_MONGO_URI:-mongodb://recommendation-mongo:27017/recommendation-db}
+    depends_on:
+      - recommendation-mongo
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+
+  recommendation-mongo:
+    image: mongo:7.0
+    container_name: recommendation-mongo
+    environment:
+      MONGO_INITDB_DATABASE: recommendation-db
+    volumes:
+      - recommendation-mongo-data:/data/db
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+networks:
+  univalle-network:
+    driver: bridge
+
+volumes:
+  search-mongo-data:
+    driver: local
+  catalog-mongo-data:
+    driver: local
+  orders-mongo-data:
+    driver: local
+  users-mongo-data:
+    driver: local
+  recommendation-mongo-data:
+    driver: local
