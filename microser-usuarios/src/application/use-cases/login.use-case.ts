@@ -4,7 +4,6 @@ import { LoginDTO, LoginResponseDTO } from '../dto/usuario.dto';
 import { UsuarioDomainException } from '../../domain/exceptions/usuario-domain-exception';
 import { PasswordService } from '../../infrastructure/security/password.service';
 import { TokenService } from '../../infrastructure/security/token.service';
-import { CodigoAcceso } from '../../domain/value-objects/codigo-acceso';
 
 @Injectable()
 export class LoginUseCase {
@@ -16,22 +15,7 @@ export class LoginUseCase {
   ) {}
 
   async execute(dto: LoginDTO): Promise<LoginResponseDTO> {
-    let acceso: CodigoAcceso;
-
-    try {
-      acceso = CodigoAcceso.create(dto.codigo, dto.anioRegistro);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : '';
-      if (message === 'Invalid registration year') {
-        throw UsuarioDomainException.invalidRegistrationYear();
-      }
-      throw UsuarioDomainException.invalidAccessCode();
-    }
-
-    const usuario = await this.usuarioRepository.findByCodigoAndAnioRegistro(
-      acceso.codigo,
-      acceso.anioRegistro,
-    );
+    const usuario = await this.usuarioRepository.findByCodigo(dto.codigo);
     if (!usuario) {
       throw UsuarioDomainException.invalidCredentials();
     }

@@ -38,6 +38,19 @@ export class MongoUsuarioRepository implements IUsuarioRepository {
     });
   }
 
+  async findByCodigo(codigo: string): Promise<Usuario | null> {
+    const db = getMongoDb();
+    const collection = db.collection<UsuarioDocument>(this.collectionName);
+
+    const data = await collection.findOne({ codigo });
+    if (!data) return null;
+
+    return this.mapper.toDomain({
+      id: String(data._id),
+      ...data
+    });
+  }
+
   async findByCodigoAndAnioRegistro(
     codigo: string,
     anioRegistro: number,

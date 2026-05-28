@@ -35,7 +35,6 @@ export class SolicitarAccesoResponseDTO {
 
 export class LoginDTO {
   codigo: string;
-  anioRegistro: number;
   password: string;
 }
 

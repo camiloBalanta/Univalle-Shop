@@ -18,6 +18,15 @@ export class UsuarioRepositoryMemory implements IUsuarioRepository {
     return this.mapper.toDomain(data);
   }
 
+  async findByCodigo(codigo: string): Promise<Usuario | null> {
+    for (const data of this.usuarios.values()) {
+      if (data.codigo === codigo) {
+        return this.mapper.toDomain(data);
+      }
+    }
+    return null;
+  }
+
   async findByCodigoAndAnioRegistro(
     codigo: string,
     anioRegistro: number,

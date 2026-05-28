@@ -1,0 +1,93 @@
+import { useMutation } from '@tanstack/react-query';
+import { CheckoutForm } from '../components/cart/CheckoutForm';
+import { EmptyState } from '../components/ui/EmptyState';
+import { PaymentModal } from '../components/shared/PaymentModal';
+import { ordersService } from '../services/orders.service';
+import { paymentsService } from '../services/payments.service';
+import { useAuthStore } from '../store/auth.store';
+import { useCartStore } from '../store/cart.store';
+import { useUiStore } from '../store/ui.store';
+import { formatMoney } from '../utils/formatters';
+
+export function CheckoutPage() {
+  const session = useAuthStore((state) => state.session);
+  const items = useCartStore((state) => state.items);
+  const clear = useCartStore((state) => state.clear);
+  const notify = useUiStore((state) => state.notify);
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const checkout = useMutation({
+    mutationFn: async () => {
+      const order = await ordersService.createOrder({
+        customerId: session?.userId || 'guest',
+        items,
+        totalAmount: total,
+      });
+      const payment = await paymentsService.simulate(order.id, {
+        amount: order.totalAmount,
+        customerId: session?.userId || 'guest',
+      });
+      return { order, payment };
+    },
+    onSuccess: ({ order, payment }) => {
+      if (payment.status === 'approved') {
+        clear();
+        notify({ type: 'success', title: 'Pago aprobado', message: `Orden #${order.id}` });
+      } else {
+        notify({ type: 'error', title: 'Pago rechazado', message: payment.message });
+      }
+    },
+    onError: () => {
+      notify({
+        type: 'error',
+        title: 'No se pudo procesar la compra',
+        message: 'Revisa el microservicio de pagos o el servicio de ordenes.',
+      });
+    },
+  });
+
+  if (!items.length) {
+    return <EmptyState title="Tu carrito esta vacio" description="Agrega productos antes de continuar al checkout." />;
+  }
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+      <CheckoutForm onSubmit={() => checkout.mutate()} />
+      <aside className="surface h-fit p-6">
+        <PaymentModal />
+        <div className="mt-6">
+          <h2 className="text-xl font-black">Resumen</h2>
+          <div className="mt-5 grid gap-4">
+            {items.map((item) => (
+              <div key={item.productId} className="flex justify-between gap-4 text-sm">
+                <span className="font-bold text-slate-600 dark:text-slate-300">
+                  {item.name} x{item.quantity}
+                </span>
+                <strong>{formatMoney(item.price * item.quantity)}</strong>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex justify-between border-t border-slate-200 pt-5 text-xl font-black dark:border-slate-800">
+            <span>Total</span>
+            <span>{formatMoney(total)}</span>
+          </div>
+          {checkout.isLoading && (
+            <p className="mt-4 text-sm text-muted">Procesando pago con el microservicio...</p>
+          )}
+          {checkout.isError && (
+            <p className="mt-4 text-sm font-bold text-red-700">
+              No se pudo conectar con el microservicio de pagos.
+            </p>
+          )}
+          {checkout.data && (
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-sm font-bold">Pago: {checkout.data.payment.status}</p>
+              <p className="text-sm text-muted">{checkout.data.payment.message}</p>
+              <p className="mt-3 text-xs text-slate-500">Pago generado: {checkout.data.payment.paymentId}</p>
+            </div>
+          )}
+        </div>
+      </aside>
+    </div>
+  );
+}

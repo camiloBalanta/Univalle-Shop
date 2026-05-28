@@ -22,6 +22,7 @@ export class ProductRepositoryImpl implements IProductRepository {
       document.name,
       document.price,
       document.description,
+      document.images ?? [],
     );
   }
 
@@ -41,6 +42,7 @@ export class ProductRepositoryImpl implements IProductRepository {
       name: product.name,
       price: product.price,
       description: product.description,
+      images: product.images,
     });
     return this.toDomain(createdProduct);
   }

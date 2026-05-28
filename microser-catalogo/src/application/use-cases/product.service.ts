@@ -46,6 +46,7 @@ export class ProductService {
       dto.name,
       dto.price,
       dto.description,
+      dto.images ?? [],
     );
 
     const created = await this.repository.create(product);

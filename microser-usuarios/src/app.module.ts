@@ -10,9 +10,7 @@ import { ActualizarUsuarioUseCase } from './application/use-cases/actualizar-usu
 import { EliminarUsuarioUseCase } from './application/use-cases/eliminar-usuario.use-case';
 import { ObtenerUsuarioUseCase } from './application/use-cases/obtener-usuario.use-case';
 import { ListarUsuariosUseCase } from './application/use-cases/listar-usuarios.use-case';
-import { SolicitarAccesoUseCase } from './application/use-cases/solicitar-acceso.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
-import { CambiarPasswordUseCase } from './application/use-cases/cambiar-password.use-case';
 import { UsuarioApplicationService } from './application/services/usuario-application.service';
 import { UsuarioSaga } from './application/sagas/usuario.saga';
 import { PasswordService } from './infrastructure/security/password.service';
@@ -31,9 +29,7 @@ import { JwtAuthGuard } from './infrastructure/security/jwt-auth.guard';
     EliminarUsuarioUseCase,
     ObtenerUsuarioUseCase,
     ListarUsuariosUseCase,
-    SolicitarAccesoUseCase,
     LoginUseCase,
-    CambiarPasswordUseCase,
     UsuarioApplicationService,
     PasswordService,
     TokenService,

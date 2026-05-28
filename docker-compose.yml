@@ -48,8 +48,6 @@ services:
       retries: 3
       start_period: 40s
     logging: *default-logging
-
-  catalog-mongo:
   payment-service:
     build:
       context: ./microser-pagos
@@ -184,3 +182,7 @@ services:
     logging: *default-logging
 
 volumes: {}
+
+networks:
+  univalle-network:
+    driver: bridge
