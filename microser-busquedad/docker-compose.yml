@@ -1,0 +1,13 @@
+services:
+  search-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ms-busqueda-search
+    ports:
+      - '3001:3001'
+    environment:
+      - PORT=3001
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB_NAME=${MONGO_DB_NAME:-microsearch}
+    restart: unless-stopped

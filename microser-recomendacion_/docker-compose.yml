@@ -1,0 +1,36 @@
+services:
+  recommendation-service:
+    build: .
+    container_name: recommendation-service
+    ports:
+      - "3006:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=${NODE_ENV:-development}
+      - MONGO_URI=${MONGO_URI:-mongodb://mongo:27017/recommendation-db}
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:latest
+    container_name: recommendation-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=recommendation-db
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - univalle-network
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  univalle-network:
+    driver: bridge

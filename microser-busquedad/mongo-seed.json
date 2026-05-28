@@ -1,0 +1,52 @@
+[
+  {
+    "productId": "UVS-001",
+    "name": "Camiseta UnivalleShop",
+    "description": "Camiseta roja con estampado institucional para estudiantes de Univalle.",
+    "category": "Ropa",
+    "price": 45000,
+    "imageUrl": "https://placehold.co/600x400?text=Camiseta+Univalle",
+    "stock": 18,
+    "seller": "Tienda Central"
+  },
+  {
+    "productId": "UVS-002",
+    "name": "Cuaderno Facultad de Ingenieria",
+    "description": "Cuaderno argollado de 100 hojas para apuntes universitarios.",
+    "category": "Papeleria",
+    "price": 12000,
+    "imageUrl": "https://placehold.co/600x400?text=Cuaderno+Ingenieria",
+    "stock": 40,
+    "seller": "Papeleria Campus"
+  },
+  {
+    "productId": "UVS-003",
+    "name": "Termo Univalle Rojo",
+    "description": "Termo metalico de 500 ml para bebidas frias o calientes.",
+    "category": "Accesorios",
+    "price": 38000,
+    "imageUrl": "https://placehold.co/600x400?text=Termo+Rojo",
+    "stock": 12,
+    "seller": "Eco Campus"
+  },
+  {
+    "productId": "UVS-004",
+    "name": "Libro Calculo Diferencial",
+    "description": "Texto guia usado en cursos iniciales de matematicas.",
+    "category": "Libros",
+    "price": 65000,
+    "imageUrl": "https://placehold.co/600x400?text=Calculo+Diferencial",
+    "stock": 7,
+    "seller": "Libreria Universitaria"
+  },
+  {
+    "productId": "UVS-005",
+    "name": "Sticker Pack Univalle",
+    "description": "Paquete de stickers para portatil, agenda o termo.",
+    "category": "Accesorios",
+    "price": 8000,
+    "imageUrl": "https://placehold.co/600x400?text=Sticker+Pack",
+    "stock": 60,
+    "seller": "Diseno Estudiantil"
+  }
+]

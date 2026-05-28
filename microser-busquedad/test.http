@@ -1,0 +1,36 @@
+### Pruebas del Microservicio de Busqueda de UnivalleShop
+
+# Busqueda general (sin query)
+GET http://localhost:3000/search
+
+###
+
+# Busqueda con query especifico
+GET http://localhost:3000/search?q=camiseta
+
+###
+
+# Busqueda por categoria o vendedor
+GET http://localhost:3000/search?q=accesorios
+
+###
+
+# Busqueda filtrada por categoria
+GET http://localhost:3000/search?q=univalle&category=Ropa
+
+###
+
+# Categoria sin texto de busqueda
+GET http://localhost:3000/search?category=Accesorios
+
+###
+
+# Busqueda con query que no coincide
+GET http://localhost:3000/search?q=xyz
+
+###
+
+# Endpoint raiz (Hello World)
+GET http://localhost:3000/
+
+###
