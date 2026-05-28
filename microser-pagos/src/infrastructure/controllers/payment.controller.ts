@@ -71,5 +71,47 @@ export class PaymentController {
   async getAllSagas() {
     return this.paymentSaga.getAllSagas();
   }
+
+  @Post('simulate/:orderId')
+  async simulatePayment(
+    @Param('orderId') orderId: string,
+    @Body() body: { amount: number; customerId: string },
+  ) {
+    const approved = Math.random() < 0.7; // 70% aprobado, 30% rechazado
+    const paymentStatus = approved ? 'approved' : 'rejected';
+
+    try {
+      // Intenta actualizar el estado de la orden en el microservicio de órdenes
+      const orderStatus = approved ? 'paid' : 'payment_rejected';
+      const ordersServiceUrl =
+        process.env.ORDERS_SERVICE_HOST_PORT || 'http://orders-service:3004';
+
+      await fetch(`http://orders-service:3004/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: orderStatus }),
+      }).catch(() => {
+        // Si falla, seguimos de todos modos porque la orden ya existe
+        console.log(
+          `No se pudo actualizar orden ${orderId} a estado ${orderStatus}`,
+        );
+      });
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
+
+    return {
+      paymentId: `PAY-${Date.now()}`,
+      orderId,
+      customerId: body.customerId,
+      amount: body.amount,
+      status: paymentStatus,
+      timestamp: new Date().toISOString(),
+      message:
+        paymentStatus === 'approved'
+          ? 'Pago procesado exitosamente'
+          : 'Pago rechazado. Intenta de nuevo.',
+    };
+  }
 }
 

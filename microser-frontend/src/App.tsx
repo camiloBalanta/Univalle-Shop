@@ -307,6 +307,28 @@ export default function App() {
     });
   }
 
+  async function processPayment(order: Order) {
+    await withBusy(async () => {
+      const response = await request<{ status: string; message: string }>(
+        apiUrl,
+        `/payment/simulate/${order.id}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            amount: order.totalAmount,
+            customerId: order.customerId,
+          }),
+        },
+      );
+      const resultText =
+        response.status === 'approved'
+          ? `✓ Pago aprobado - ${response.message}`
+          : `✗ Pago rechazado - ${response.message}`;
+      setNotice({ type: response.status === 'approved' ? 'ok' : 'error', text: resultText });
+      await loadOrders();
+    });
+  }
+
   async function loadOrders() {
     const data = await request<Order[]>(apiUrl, '/orders');
     setOrders(data);
@@ -541,8 +563,28 @@ export default function App() {
                     </div>
                   </div>
                   <div>
-                    <span>{o.status}</span>
+                    <span className={`status status-${o.status}`}>{o.status}</span>
                     <span>{formatMoney(o.totalAmount)}</span>
+                  </div>
+                  <div>
+                    {o.status !== 'paid' && o.status !== 'payment_rejected' && (
+                      <button
+                        disabled={busy || o.status === 'cancelled'}
+                        className="pay-button"
+                        onClick={() => void processPayment(o)}
+                      >
+                        Pagar
+                      </button>
+                    )}
+                    {o.status === 'payment_rejected' && (
+                      <button
+                        disabled={busy}
+                        className="pay-button"
+                        onClick={() => void processPayment(o)}
+                      >
+                        Reintentar
+                      </button>
+                    )}
                   </div>
                 </div>
               ))
