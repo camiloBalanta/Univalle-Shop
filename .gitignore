@@ -23,6 +23,11 @@ Thumbs.db
 # Docker
 **/docker-compose.override.yml
 
+# Generated command output
+compose_config_output.txt
+up_output.txt
+
 # Environment files (tracked root .env kept intentionally)
+.env.atlas
 .env.local
 .env.*.local

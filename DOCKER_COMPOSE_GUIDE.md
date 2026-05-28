@@ -10,6 +10,7 @@ Este archivo `docker-compose.yml` raíz levanta todos los microservicios del pro
 - **Orders Service** (Pedidos) - Puerto 3004
 - **Users Service** (Usuarios) - Puerto 3003
 - **Recommendation Service** (Recomendación) - Puerto 3006
+- **Gateway Service** (API Gateway) - Puerto 3005
 
 Cada servicio tiene su propia instancia de MongoDB y está conectado a través de la red `univalle-network`.
 
@@ -30,11 +31,11 @@ cd c:\Users\camil\Documents\UnivalleShop
 
 ### 2. Verificar que el `.env` raíz está configurado
 
-El archivo `.env` raíz ya contiene los valores de puerto y las URIs de MongoDB para cada servicio. Si necesitas cambiar puertos o usar otra base de datos, edítalo en `c:\Users\camil\Documents\UnivalleShop\.env`.
+El archivo `.env` raíz ya contiene las URIs de MongoDB y la configuración de puertos. En esta orquestación, solo el **API Gateway** se expone a la máquina host. Los demás microservicios son internos y se comunican a través de la red `univalle-network`.
 
 Valores importantes en `.env`:
 - `NODE_ENV` — ambiente general (production por defecto)
-- `SEARCH_SERVICE_HOST_PORT`, `CATALOG_SERVICE_HOST_PORT`, `PAYMENT_SERVICE_HOST_PORT`, `ORDERS_SERVICE_HOST_PORT`, `USERS_SERVICE_HOST_PORT`, `RECOMMENDATION_SERVICE_HOST_PORT`
+- `GATEWAY_SERVICE_HOST_PORT` — puerto expuesto para el API Gateway
 - `SEARCH_MONGO_URI`, `CATALOG_MONGO_URI`, `ORDERS_MONGO_URI`, `USERS_MONGO_URI`, `RECOMMENDATION_MONGO_URI`
 
 ### 3. Levantar todos los servicios
@@ -60,15 +61,18 @@ Deberías ver todos los servicios con estado `Up`.
 
 | Servicio | Puerto | URL |
 |----------|--------|-----|
-| Search API | 3001 | http://localhost:3001 |
-| Catalog API | 3000 | http://localhost:3000 |
-| Search API | 3001 | http://localhost:3001 |
-| Payment API | 3002 | http://localhost:3002 |
-| Orders API | 3004 | http://localhost:3004 |
-| Users API | 3003 | http://localhost:3003 |
-| Recommendation API | 3006 | http://localhost:3006 |
+| Search API | internal only via gateway | http://localhost:3005/search/ |
+| Catalog API | internal only via gateway | http://localhost:3005/catalog/ |
+| Payment API | internal only via gateway | http://localhost:3005/payment/ |
+| Orders API | internal only via gateway | http://localhost:3005/orders/ |
+| Users API | internal only via gateway | http://localhost:3005/users/ |
+| Authentication API | internal only via gateway | http://localhost:3005/auth/ |
+| Recommendation API | internal only via gateway | http://localhost:3005/recommendation/ |
+| API Gateway | 3005 | http://localhost:3005 |
 
 ## Bases de Datos MongoDB
+
+> Nota: El gateway es el único punto de entrada externo. Los microservicios internos se comunican entre sí en la red `univalle-network`.
 
 - `search-mongo:27017` → Database: `microsearch`
 - `catalog-mongo:27017` → Database: `catalogo`
@@ -168,4 +172,5 @@ Los servicios pueden comunicarse entre sí usando:
 - `http://orders-service:3004`
 - `http://users-service:3000`
 - `http://recommendation-service:3000`
+- `http://gateway-service:3000`
 

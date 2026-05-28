@@ -1,0 +1,28 @@
+services:
+  search-service:
+    environment:
+      - MONGO_URI=${SEARCH_MONGO_URI:?SEARCH_MONGO_URI is required}
+      - MONGO_DB_NAME=${SEARCH_MONGO_DB_NAME:-microsearch}
+    depends_on: null
+
+  catalog-service:
+    environment:
+      - MONGO_URI=${CATALOG_MONGO_URI:?CATALOG_MONGO_URI is required}
+    depends_on: null
+
+  orders-service:
+    environment:
+      - MONGO_URI=${ORDERS_MONGO_URI:?ORDERS_MONGO_URI is required}
+      - MONGO_DB_NAME=${ORDERS_MONGO_DB_NAME:-pedidos}
+    depends_on: null
+
+  users-service:
+    environment:
+      - MONGO_URI=${USERS_MONGO_URI:?USERS_MONGO_URI is required}
+      - MONGODB_URI=${USERS_MONGODB_URI:-${USERS_MONGO_URI}}
+    depends_on: null
+
+  recommendation-service:
+    environment:
+      - MONGO_URI=${RECOMMENDATION_MONGO_URI:?RECOMMENDATION_MONGO_URI is required}
+    depends_on: null

@@ -5,14 +5,12 @@ x-logging: &default-logging
     max-file: "3"
 
 services:
-  # Búsqueda Microservice + Frontend
+  # Búsqueda Microservice
   search-service:
     build:
       context: ./microser-busquedad
       dockerfile: Dockerfile
     container_name: ms-busqueda-api
-    ports:
-      - '${SEARCH_SERVICE_HOST_PORT:-3001}:${SEARCH_SERVICE_PORT:-3001}'
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${SEARCH_SERVICE_PORT:-3001}
@@ -23,6 +21,12 @@ services:
     networks:
       - univalle-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3001/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     logging: *default-logging
 
   search-mongo:
@@ -37,7 +41,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -49,8 +53,6 @@ services:
       context: ./microser-catalogo
       dockerfile: Dockerfile
     container_name: ms-catalogo-api
-    ports:
-      - '${CATALOG_SERVICE_HOST_PORT:-3000}:${CATALOG_SERVICE_PORT:-3000}'
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${CATALOG_SERVICE_PORT:-3000}
@@ -60,6 +62,12 @@ services:
     networks:
       - univalle-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/products', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     logging: *default-logging
 
   catalog-mongo:
@@ -74,7 +82,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -86,8 +94,6 @@ services:
       context: ./microser-pagos
       dockerfile: Dockerfile
     container_name: ms-pagos-api
-    ports:
-      - '${PAYMENT_SERVICE_HOST_PORT:-3002}:${PAYMENT_SERVICE_PORT:-3000}'
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${PAYMENT_SERVICE_PORT:-3000}
@@ -104,14 +110,12 @@ services:
       - ./microser-pagos/logs:/app/logs
     logging: *default-logging
 
-  # Pedidos Microservice + Frontend
+  # Pedidos Microservice
   orders-service:
     build:
       context: ./microser-pedidos
       dockerfile: Dockerfile
     container_name: ms-pedidos-api
-    ports:
-      - '${ORDERS_SERVICE_HOST_PORT:-3004}:${ORDERS_SERVICE_PORT:-3004}'
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${ORDERS_SERVICE_PORT:-3004}
@@ -121,6 +125,12 @@ services:
     networks:
       - univalle-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3004/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     logging: *default-logging
 
   orders-mongo:
@@ -135,7 +145,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -147,8 +157,6 @@ services:
       context: ./microser-usuarios
       dockerfile: Dockerfile
     container_name: ms-usuarios-api
-    ports:
-      - '${USERS_SERVICE_HOST_PORT:-3003}:${USERS_SERVICE_PORT:-3000}'
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${USERS_SERVICE_PORT:-3000}
@@ -159,6 +167,12 @@ services:
     networks:
       - univalle-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     logging: *default-logging
 
   users-mongo:
@@ -173,7 +187,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -185,8 +199,6 @@ services:
       context: ./microser-recomendacion_
       dockerfile: Dockerfile
     container_name: ms-recomendacion-api
-    ports:
-      - '${RECOMMENDATION_SERVICE_HOST_PORT:-3006}:${RECOMMENDATION_SERVICE_PORT:-3000}'
     environment:
       - NODE_ENV=${NODE_ENV:-production}
       - PORT=${RECOMMENDATION_SERVICE_PORT:-3000}
@@ -197,11 +209,56 @@ services:
       - univalle-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD-SHELL", "node -e \"require('http').get('http://localhost:3000/health', r => process.exit(r.statusCode < 500 ? 0 : 1)).on('error', () => process.exit(1))\""]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    logging: *default-logging
+
+  gateway-service:
+    build:
+      context: ./microser-gateway
+      dockerfile: Dockerfile
+    container_name: ms-gateway-api
+    ports:
+      - '${GATEWAY_SERVICE_HOST_PORT:-3005}:${GATEWAY_SERVICE_PORT:-3000}'
+    depends_on:
+      - search-service
+      - catalog-service
+      - payment-service
+      - orders-service
+      - users-service
+      - recommendation-service
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging: *default-logging
+
+  frontend-service:
+    build:
+      context: ./microser-frontend
+      dockerfile: Dockerfile
+    container_name: ms-pedidos-frontend
+    ports:
+      - '${FRONTEND_HOST_PORT:-5173}:80'
+    depends_on:
+      - gateway-service
+    networks:
+      - univalle-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     logging: *default-logging
 
   recommendation-mongo:
@@ -216,7 +273,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
