@@ -17,11 +17,11 @@ export function Navbar() {
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/88">
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/[0.82] dark:shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
       <div className="container-app">
         <div className="flex h-20 items-center gap-4">
           <button
-            className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 dark:border-slate-700"
+            className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-100 dark:hover:border-campus-500/40 dark:hover:bg-campus-500/10"
             onClick={() => setSidebarOpen(true)}
             aria-label="Abrir menú"
           >
@@ -37,10 +37,10 @@ export function Navbar() {
             </span>
           </Link>
           <SearchBar />
-          <button onClick={toggleTheme} className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-200">
+          <button onClick={toggleTheme} className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-200 dark:hover:border-white/15 dark:hover:bg-white/10">
             {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
           </button>
-          <button onClick={toggleCart} className="relative grid h-11 w-11 place-items-center rounded-xl bg-slate-950 text-white dark:bg-white dark:text-slate-950">
+          <button onClick={toggleCart} className="relative grid h-11 w-11 place-items-center rounded-xl bg-slate-950 text-white transition hover:bg-brand-600 dark:bg-brand-500 dark:text-white dark:hover:bg-brand-600">
             <ShoppingBag size={19} />
             {totalItems > 0 && (
               <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full bg-brand-600 px-1 text-xs font-black text-white">

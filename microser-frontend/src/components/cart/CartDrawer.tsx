@@ -17,20 +17,20 @@ export function CartDrawer() {
     <AnimatePresence>
       {open && (
         <>
-          <motion.div className="fixed inset-0 z-50 bg-slate-950/50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={toggleCart} />
+          <motion.div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={toggleCart} />
           <motion.aside
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 260, damping: 28 }}
-            className="fixed right-0 top-0 z-50 flex h-screen w-[min(440px,100vw)] flex-col bg-white shadow-soft dark:bg-slate-950"
+            className="fixed right-0 top-0 z-50 flex h-screen w-[min(440px,100vw)] flex-col bg-white shadow-soft dark:border-l dark:border-white/10 dark:bg-slate-950/[0.96] dark:shadow-[-18px_0_50px_rgba(0,0,0,0.34)] dark:backdrop-blur-xl"
           >
-            <header className="flex items-center justify-between border-b border-slate-200 p-5 dark:border-slate-800">
+            <header className="flex items-center justify-between border-b border-slate-200 p-5 dark:border-white/10">
               <div>
                 <h2 className="text-xl font-black">Carrito</h2>
                 <p className="text-sm text-muted">{items.length} productos seleccionados</p>
               </div>
-              <button className="grid h-10 w-10 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800" onClick={toggleCart}>
+              <button className="grid h-10 w-10 place-items-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200 dark:bg-white/[0.07] dark:text-slate-200 dark:hover:bg-white/10" onClick={toggleCart}>
                 <X size={19} />
               </button>
             </header>
@@ -46,8 +46,8 @@ export function CartDrawer() {
               ) : (
                 <div className="grid gap-4">
                   {items.map((item) => (
-                    <article key={item.productId} className="flex gap-3 rounded-2xl border border-slate-200 p-3 dark:border-slate-800">
-                      <div className="grid h-20 w-20 place-items-center rounded-xl bg-slate-100 text-slate-500 dark:bg-slate-800">
+                    <article key={item.productId} className="flex gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-white/[0.06] dark:shadow-none">
+                      <div className="grid h-20 w-20 place-items-center rounded-xl bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400">
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="h-full w-full rounded-xl object-cover" />
                         ) : (
@@ -58,12 +58,12 @@ export function CartDrawer() {
                         <h3 className="line-clamp-2 text-sm font-black">{item.name}</h3>
                         <p className="mt-1 text-sm font-bold text-brand-600">{formatMoney(item.price)}</p>
                         <div className="mt-3 flex items-center justify-between">
-                          <div className="flex items-center rounded-xl border border-slate-200 dark:border-slate-700">
-                            <button className="grid h-8 w-8 place-items-center" onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
+                          <div className="flex items-center rounded-xl border border-slate-200 dark:border-white/10 dark:bg-slate-950/40">
+                            <button className="grid h-8 w-8 place-items-center transition hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => updateQuantity(item.productId, item.quantity - 1)}>
                               <Minus size={14} />
                             </button>
                             <span className="grid h-8 w-8 place-items-center text-sm font-black">{item.quantity}</span>
-                            <button className="grid h-8 w-8 place-items-center" onClick={() => updateQuantity(item.productId, item.quantity + 1)}>
+                            <button className="grid h-8 w-8 place-items-center transition hover:bg-slate-100 dark:hover:bg-white/10" onClick={() => updateQuantity(item.productId, item.quantity + 1)}>
                               <Plus size={14} />
                             </button>
                           </div>
@@ -77,7 +77,7 @@ export function CartDrawer() {
                 </div>
               )}
             </div>
-            <footer className="border-t border-slate-200 p-5 dark:border-slate-800">
+            <footer className="border-t border-slate-200 p-5 dark:border-white/10">
               <div className="mb-4 flex items-center justify-between text-lg font-black">
                 <span>Total</span>
                 <span>{formatMoney(total)}</span>

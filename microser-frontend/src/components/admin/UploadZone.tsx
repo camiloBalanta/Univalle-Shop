@@ -60,7 +60,7 @@ export function UploadZone({ images, onChange }: UploadZoneProps) {
   return (
     <div className="grid gap-4 rounded-[32px] border border-slate-200/80 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-950/80">
       <div
-        className="group relative flex min-h-[210px] flex-col items-center justify-center gap-3 rounded-[28px] border-2 border-dashed border-slate-300 bg-white/80 p-5 text-center transition hover:border-brand-500 hover:bg-brand-50/50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-brand-400"
+        className="group relative flex min-h-[210px] flex-col items-center justify-center gap-3 rounded-[28px] border-2 border-dashed border-slate-300 bg-white/80 p-5 text-center transition hover:border-brand-500 hover:bg-brand-50/50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-brand-500"
         onDrop={handleDrop}
         onDragOver={(event) => event.preventDefault()}
       >

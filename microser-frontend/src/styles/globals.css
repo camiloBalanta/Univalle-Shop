@@ -30,8 +30,14 @@ body {
 body.dark {
   color: #f8fafc;
   background:
-    radial-gradient(circle at top left, rgba(19, 124, 139, 0.22), transparent 30rem),
-    linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    radial-gradient(circle at top left, rgba(19, 124, 139, 0.18), transparent 32rem),
+    radial-gradient(circle at top right, rgba(169, 17, 45, 0.14), transparent 30rem),
+    linear-gradient(180deg, #0b1120 0%, #111827 46%, #0f172a 100%);
+}
+
+.dark .text-muted,
+body.dark .text-muted {
+  color: #94a3b8;
 }
 
 button,
@@ -56,19 +62,19 @@ button:disabled {
   }
 
   .surface {
-    @apply rounded-2xl border border-slate-200 bg-white shadow-card dark:border-slate-800 dark:bg-slate-900;
+    @apply rounded-2xl border border-slate-200 bg-white shadow-card dark:border-white/10 dark:bg-slate-900/80 dark:shadow-none dark:backdrop-blur;
   }
 
   .input {
-    @apply h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-campus-500 focus:ring-4 focus:ring-campus-500/10 dark:border-slate-700 dark:bg-slate-950 dark:text-white;
+    @apply h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-campus-500 focus:ring-4 focus:ring-campus-500/10 dark:border-white/10 dark:bg-slate-950/55 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-campus-500 dark:focus:ring-campus-500/15;
   }
 
   .btn-primary {
-    @apply inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-700;
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-500/20 dark:bg-brand-500 dark:shadow-none dark:hover:bg-brand-600 dark:focus:ring-brand-500/25;
   }
 
   .btn-secondary {
-    @apply inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800;
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-campus-500/10 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-100 dark:hover:border-white/15 dark:hover:bg-white/10 dark:focus:ring-campus-500/15;
   }
 
   .badge {

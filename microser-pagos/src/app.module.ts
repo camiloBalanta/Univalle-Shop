@@ -1,34 +1,23 @@
 import { Module } from '@nestjs/common';
-import { PaymentController } from './infrastructure/controllers/payment.controller';
-import { PaymentRepositoryImpl } from './infrastructure/persistence/payment.repository.impl';
-import { ProcessPaymentUseCase } from './application/use-cases/process-payment.use-case';
-import { ValidatePaymentUseCase } from './application/use-cases/validate-payment.use-case';
-import { CompensatePaymentUseCase } from './application/use-cases/compensate-payment.use-case';
-import { PaymentGatewayService } from './application/services/payment-gateway.service';
-import { PaymentValidationService } from './application/services/payment-validation.service';
-import { NotificationService } from './application/services/notification.service';
-import { CreatePaymentHandler } from './application/handlers/create-payment.handler';
-import { ConfirmPaymentHandler } from './application/handlers/confirm-payment.handler';
-import { CancelPaymentHandler } from './application/handlers/cancel-payment.handler';
-import { RefundPaymentHandler } from './application/handlers/refund-payment.handler';
-import { PaymentSaga } from './application/saga/payment.saga';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { PaymentsModule } from './payments/payments.module';
+
+const env = (globalThis as { process?: { env?: Record<string, string> } })
+  .process?.env;
 
 @Module({
-  imports: [],
-  controllers: [PaymentController],
-  providers: [
-    PaymentRepositoryImpl,
-    ProcessPaymentUseCase,
-    ValidatePaymentUseCase,
-    CompensatePaymentUseCase,
-    PaymentGatewayService,
-    PaymentValidationService,
-    NotificationService,
-    CreatePaymentHandler,
-    ConfirmPaymentHandler,
-    CancelPaymentHandler,
-    RefundPaymentHandler,
-    PaymentSaga,
+  imports: [
+    MongooseModule.forRoot(
+      env?.MONGO_URI ?? env?.PAYMENT_MONGO_URI ?? 'mongodb://localhost:27017/pagos',
+      {
+        dbName: env?.MONGO_DB_NAME ?? env?.PAYMENT_MONGO_DB_NAME ?? 'pagos',
+      },
+    ),
+    PaymentsModule,
   ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

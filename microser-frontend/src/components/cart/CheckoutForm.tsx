@@ -17,7 +17,7 @@ export function CheckoutForm({ onSubmit }: { onSubmit: () => void }) {
         <CreditCard size={18} /> Confirmar compra
       </button>
       <p className="flex items-center gap-2 text-xs font-bold text-muted">
-        <LockKeyhole size={14} /> Esta interfaz consume el microservicio real de pagos.
+        <LockKeyhole size={14} /> Revisa tus datos antes de finalizar la compra.
       </p>
     </form>
   );

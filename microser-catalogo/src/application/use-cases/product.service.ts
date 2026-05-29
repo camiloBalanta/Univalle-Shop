@@ -1,4 +1,10 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Inject,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { randomUUID } from 'crypto';
 import { Product } from '../../domain/entities/product.entity';
@@ -17,6 +23,8 @@ import { SearchIndexClient } from '../../infrastructure/search/search-index.clie
  */
 @Injectable()
 export class ProductService {
+  private readonly logger = new Logger(ProductService.name);
+
   constructor(
     @Inject('IProductRepository')
     private readonly repository: IProductRepository,
@@ -132,5 +140,57 @@ export class ProductService {
     }
 
     return deleted;
+  }
+
+  async decreaseStock(id: string, quantity: number): Promise<Product> {
+    this.validateStockQuantity(quantity);
+    this.logger.log(`Descontando stock producto=${id} cantidad=${quantity}`);
+
+    const updated = await this.repository.decreaseStock(id, quantity);
+    if (!updated) {
+      this.logger.warn(
+        `Stock insuficiente o producto inexistente producto=${id} cantidad=${quantity}`,
+      );
+      throw new BadRequestException(
+        `Stock insuficiente para el producto ${id}`,
+      );
+    }
+
+    await this.searchIndexClient.upsertProduct(updated);
+    this.eventBus.publish(
+      new ProductUpdatedEvent(updated.id, {
+        name: updated.name,
+        price: updated.price,
+        description: updated.description,
+      }),
+    );
+    this.logger.log(`Stock actualizado producto=${id} stock=${updated.stock}`);
+    return updated;
+  }
+
+  async increaseStock(id: string, quantity: number): Promise<Product> {
+    this.validateStockQuantity(quantity);
+    this.logger.log(`Reintegrando stock producto=${id} cantidad=${quantity}`);
+
+    const updated = await this.repository.increaseStock(id, quantity);
+    if (!updated) {
+      throw new NotFoundException(`Producto ${id} no encontrado`);
+    }
+
+    await this.searchIndexClient.upsertProduct(updated);
+    this.eventBus.publish(
+      new ProductUpdatedEvent(updated.id, {
+        name: updated.name,
+        price: updated.price,
+        description: updated.description,
+      }),
+    );
+    return updated;
+  }
+
+  private validateStockQuantity(quantity: number): void {
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      throw new BadRequestException('La cantidad debe ser un entero positivo');
+    }
   }
 }

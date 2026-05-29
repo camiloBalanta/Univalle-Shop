@@ -65,7 +65,7 @@ export function ProductPage() {
     onError: (error: unknown) => {
       notify({
         type: 'error',
-        title: 'No se pudo calificar',
+        title: 'No pudimos guardar tu calificacion',
         message: apiErrorMessage(error),
       });
     },
@@ -103,7 +103,6 @@ export function ProductPage() {
           )}
         </div>
         <div>
-          <span className="badge bg-campus-500/10 text-campus-600">Producto de catalogo</span>
           <h1 className="mt-4 text-4xl font-black text-slate-950 dark:text-white">{product.name}</h1>
           <p className="mt-5 text-lg text-muted dark:text-slate-300">
             {product.description || 'Sin descripcion registrada en el microservicio de catalogo.'}

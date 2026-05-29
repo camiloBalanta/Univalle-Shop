@@ -1,5 +1,17 @@
 export class OrderStatus {
-  private static readonly VALID_STATUSES = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
+  private static readonly VALID_STATUSES = [
+    'pending',
+    'confirmed',
+    'payment_processing',
+    'paid',
+    'approved',
+    'completed',
+    'payment_rejected',
+    'failed',
+    'shipped',
+    'delivered',
+    'cancelled',
+  ];
 
   constructor(private value: string) {
     if (!OrderStatus.VALID_STATUSES.includes(value)) {
@@ -15,12 +27,36 @@ export class OrderStatus {
     return this.value === other.value;
   }
 
+  isPaidLike(): boolean {
+    return ['paid', 'approved', 'completed'].includes(this.value);
+  }
+
+  isRejectedLike(): boolean {
+    return ['payment_rejected', 'failed', 'cancelled'].includes(this.value);
+  }
+
+  isPaymentProcessing(): boolean {
+    return this.value === 'payment_processing';
+  }
+
   static pending(): OrderStatus {
     return new OrderStatus('pending');
   }
 
   static confirmed(): OrderStatus {
     return new OrderStatus('confirmed');
+  }
+
+  static paymentProcessing(): OrderStatus {
+    return new OrderStatus('payment_processing');
+  }
+
+  static paid(): OrderStatus {
+    return new OrderStatus('paid');
+  }
+
+  static paymentRejected(): OrderStatus {
+    return new OrderStatus('payment_rejected');
   }
 
   static shipped(): OrderStatus {

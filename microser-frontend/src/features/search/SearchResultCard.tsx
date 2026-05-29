@@ -5,7 +5,7 @@ import { formatMoney } from '../../utils/formatters';
 export function SearchResultCard({ result }: { result: ProductSearchResult }) {
   return (
     <article className="surface grid overflow-hidden sm:grid-cols-[220px_minmax(0,1fr)]">
-      <div className="aspect-[4/3] bg-slate-100 sm:aspect-auto">
+      <div className="aspect-[4/3] bg-slate-100 dark:bg-slate-950/70 sm:aspect-auto">
         <img
           src={result.imageUrl}
           alt={result.name}
@@ -16,13 +16,10 @@ export function SearchResultCard({ result }: { result: ProductSearchResult }) {
       <div className="grid gap-4 p-5">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="badge bg-brand-50 text-brand-700">{result.category}</span>
-            <span className="badge bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-              ID: {result.productId}
-            </span>
+            <span className="badge bg-brand-50 text-brand-700 dark:bg-brand-500/[0.14] dark:text-brand-100">{result.category}</span>
           </div>
-          <h2 className="mt-3 text-xl font-black text-slate-950 dark:text-white">{result.name}</h2>
-          <p className="mt-2 line-clamp-2 text-sm text-muted dark:text-slate-400">
+          <h2 className="mt-3 text-2xl font-black text-slate-950 dark:text-white">{result.name}</h2>
+          <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
             {result.description}
           </p>
         </div>

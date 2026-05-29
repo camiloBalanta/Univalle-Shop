@@ -39,14 +39,12 @@ export function ProductPreviewCard({ product, onEdit, onDelete }: ProductPreview
       </div>
 
       <div className="space-y-4 p-5">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-lg font-black text-slate-950 dark:text-white">{product.name}</p>
-          <span className="text-sm font-black text-slate-500 dark:text-slate-400">ID {product.id}</span>
+        <div className="space-y-2">
+          <p className="text-xl font-black text-slate-950 dark:text-white">{product.name}</p>
+          <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
+            {product.description ?? 'Producto sin descripción completa.'}
+          </p>
         </div>
-
-        <p className="line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-          {product.description ?? 'Producto sin descripción completa.'}
-        </p>
 
         <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-1">

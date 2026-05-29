@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: Product }) {
       className="surface grid overflow-hidden p-5"
     >
       <Link to={`/products/${product.id}`} className="grid gap-4">
-        <div className="grid aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 dark:from-slate-800 dark:to-slate-900">
+        <div className="grid aspect-[4/3] overflow-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 dark:from-slate-800 dark:to-slate-950 dark:text-slate-400">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -37,7 +37,7 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </div>
         <div>
-          <span className="badge bg-campus-500/10 text-campus-600">Catalogo</span>
+          <span className="badge bg-campus-500/10 text-campus-600 dark:bg-campus-500/[0.12] dark:text-slate-100">Catalogo</span>
           <h3 className="mt-3 line-clamp-2 min-h-12 text-base font-black text-slate-950 transition hover:text-brand-600 dark:text-white">
             {product.name}
           </h3>
@@ -49,7 +49,7 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="mt-5 flex items-center justify-between gap-3">
         <strong className="text-xl text-slate-950 dark:text-white">{formatMoney(product.price)}</strong>
         <button
-          className="grid h-11 w-11 place-items-center rounded-xl bg-slate-950 text-white transition hover:bg-brand-600 dark:bg-white dark:text-slate-950"
+          className="grid h-11 w-11 place-items-center rounded-xl bg-slate-950 text-white transition hover:bg-brand-600 dark:bg-brand-500 dark:text-white dark:hover:bg-brand-600"
           onClick={() => {
             addProduct(product);
             notify({ type: 'success', title: 'Producto agregado', message: product.name });

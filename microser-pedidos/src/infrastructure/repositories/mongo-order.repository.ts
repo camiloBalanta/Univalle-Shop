@@ -68,6 +68,21 @@ export class MongoOrderRepository implements OrderRepository {
     return updatedDoc ? this.mapToDomain(updatedDoc) : null;
   }
 
+  async updateStatusIfCurrent(
+    id: string,
+    currentStatus: string,
+    nextStatus: string,
+  ): Promise<OrderEntity | null> {
+    const updatedDoc = await this.orderModel
+      .findOneAndUpdate(
+        { _id: id, status: currentStatus },
+        { $set: { status: nextStatus } },
+        { new: true },
+      )
+      .exec();
+    return updatedDoc ? this.mapToDomain(updatedDoc) : null;
+  }
+
   async delete(id: string): Promise<boolean> {
     const result = await this.orderModel.findByIdAndDelete(id).exec();
     return !!result;

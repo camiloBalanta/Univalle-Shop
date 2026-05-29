@@ -25,7 +25,7 @@ export function AuthPanel() {
     try {
       const data = await authService.login(values);
       setSession(data);
-      notify({ type: 'success', title: 'Sesion iniciada con usuario real', message: data.message });
+      notify({ type: 'success', title: 'Bienvenido, sesion iniciada', message: data.message });
       navigate('/dashboard');
     } catch (error) {
       notify({ type: 'error', title: 'Credenciales invalidas', message: apiErrorMessage(error) });
@@ -36,16 +36,17 @@ export function AuthPanel() {
     <motion.section initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="surface overflow-hidden">
       <div className="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="bg-gradient-to-br from-slate-950 via-brand-700 to-campus-600 p-8 text-white">
-          <span className="badge bg-white/15 text-white">MongoDB Atlas + JWT</span>
-          <h1 className="mt-8 text-4xl font-black leading-tight">Ingresa con usuarios reales de la base de datos.</h1>
+          <span className="badge bg-white/15 text-white">Portal institucional</span>
+          <h1 className="mt-8 text-4xl font-black leading-tight">Bienvenido a tu espacio Univalle Shop.</h1>
           <p className="mt-4 text-white/78">
-            El login consulta el microservicio de usuarios, valida la contrasena hasheada y devuelve un token real.
+            Accede de forma sencilla para consultar tu informacion, gestionar tus compras y continuar tus actividades
+            desde un entorno claro y confiable.
           </p>
           <div className="mt-10 grid gap-3">
             {[
-              ['1', 'Usuario existente en la coleccion usuarios de Atlas'],
-              ['2', 'Validacion por codigo y contrasena'],
-              ['3', 'Dashboard distinto para estudiante, profesor o administrativo'],
+              ['1', 'Ingreso rapido con tu codigo institucional'],
+              ['2', 'Seguimiento de pedidos y productos favoritos'],
+              ['3', 'Experiencia adaptada a tu perfil universitario'],
             ].map(([step, text]) => (
               <div key={step} className="flex items-center gap-3 rounded-2xl bg-white/10 p-3">
                 <span className="grid h-9 w-9 place-items-center rounded-xl bg-white text-sm font-black text-brand-700">
@@ -59,37 +60,58 @@ export function AuthPanel() {
             <div className="flex items-center gap-3">
               <Database size={22} />
               <div>
-                <strong className="block text-sm">Fuente de identidad</strong>
-                <span className="text-sm text-white/75">MongoDB Atlas via users-service</span>
+                <p className="text-sm font-black">Tu cuenta, siempre protegida</p>
+                <p className="mt-1 text-xs font-bold text-white/70">
+                  Usa tus datos institucionales para entrar de manera segura.
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="p-6 sm:p-8">
-          <div className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-100">
-            No hay usuarios mock para autenticacion: este formulario llama a <strong>/auth/login</strong> y valida contra Atlas.
-          </div>
+        <div className="flex items-center justify-center px-6 py-8 sm:px-8 lg:px-10">
+          <form className="grid w-full max-w-md gap-4" onSubmit={loginForm.handleSubmit(login)}>
+            <div className="mb-1">
+              <span className="text-xs font-black uppercase text-campus-600 dark:text-campus-300">
+                Acceso seguro
+              </span>
+              <h2 className="mt-2 text-2xl font-black text-slate-950 dark:text-white">Iniciar sesion</h2>
+              <p className="mt-2 text-sm font-semibold text-muted">
+                Ingresa con tus datos institucionales para continuar.
+              </p>
+            </div>
 
-          <div className="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-            <span className="text-xs font-black uppercase text-muted">Rol detectado por codigo</span>
-            <strong className="text-lg text-slate-950 dark:text-white">{inferredRole}</strong>
-            <p className="text-sm text-muted">1 administrativo, 2 profesor, 3 estudiante.</p>
-          </div>
+            <div className="grid gap-3">
+              <Field label="Codigo institucional" error={loginForm.formState.errors.codigo?.message}>
+                <input
+                  className="input h-11"
+                  placeholder="Ingresa tu codigo"
+                  autoComplete="username"
+                  {...loginForm.register('codigo')}
+                />
+              </Field>
+              <Field label="Contrasena" error={loginForm.formState.errors.password?.message}>
+                <input
+                  className="input h-11"
+                  type="password"
+                  placeholder="Ingresa tu contrasena"
+                  autoComplete="current-password"
+                  {...loginForm.register('password')}
+                />
+              </Field>
+            </div>
 
-          <form className="grid gap-4" onSubmit={loginForm.handleSubmit(login)}>
-            <Field label="Codigo institucional" error={loginForm.formState.errors.codigo?.message}>
-              <input className="input" placeholder="Codigo existente en Atlas" autoComplete="username" {...loginForm.register('codigo')} />
-            </Field>
-            <Field label="Contrasena" error={loginForm.formState.errors.password?.message}>
-              <input className="input" type="password" placeholder="Contrasena del usuario real" autoComplete="current-password" {...loginForm.register('password')} />
-            </Field>
-            <button className="btn-primary" disabled={loginForm.formState.isSubmitting}>
-              Iniciar sesion
-            </button>
+            <div className="mt-1 grid gap-3">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+                Perfil detectado: <span className="text-brand-700 dark:text-campus-300">{inferredRole}</span>
+              </div>
+              <button className="btn-primary h-11 justify-center" disabled={loginForm.formState.isSubmitting}>
+                <LogIn size={18} /> Iniciar sesion
+              </button>
+            </div>
           </form>
         </div>
-      </div>
+        </div>
     </motion.section>
   );
 }

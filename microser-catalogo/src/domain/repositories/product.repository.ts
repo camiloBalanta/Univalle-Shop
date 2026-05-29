@@ -11,4 +11,6 @@ export interface IProductRepository {
   create(product: Product): Promise<Product>;
   update(id: string, product: Partial<Product>): Promise<Product | null>;
   delete(id: string): Promise<boolean>;
+  decreaseStock(id: string, quantity: number): Promise<Product | null>;
+  increaseStock(id: string, quantity: number): Promise<Product | null>;
 }

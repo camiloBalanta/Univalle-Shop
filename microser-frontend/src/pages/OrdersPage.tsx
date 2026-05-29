@@ -16,9 +16,13 @@ export function OrdersPage() {
 
   return (
     <div className="grid gap-6">
-      <div>
-        <h1 className="text-3xl font-black">Historial de ordenes</h1>
-        <p className="mt-1 text-muted">Esta vista usa solo el endpoint real `/orders/user/:userId`.</p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-black text-slate-950 dark:text-white">Historial de ordenes</h1>
+          <p className="mt-2 max-w-xl text-sm font-semibold text-muted">
+            Consulta tus compras recientes y revisa el estado de cada pedido en un solo lugar.
+          </p>
+        </div>
       </div>
       {isLoading ? (
         <div className="grid gap-4">{Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-24" />)}</div>

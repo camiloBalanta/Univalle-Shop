@@ -62,4 +62,26 @@ export class ProductRepositoryImpl implements IProductRepository {
     const result = await this.productModel.deleteOne({ _id: id }).exec();
     return result.deletedCount > 0;
   }
+
+  async decreaseStock(id: string, quantity: number): Promise<Product | null> {
+    const updatedProduct = await this.productModel
+      .findOneAndUpdate(
+        { _id: id, stock: { $gte: quantity } },
+        { $inc: { stock: -quantity }, $set: { updatedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+    return updatedProduct ? this.toDomain(updatedProduct) : null;
+  }
+
+  async increaseStock(id: string, quantity: number): Promise<Product | null> {
+    const updatedProduct = await this.productModel
+      .findByIdAndUpdate(
+        id,
+        { $inc: { stock: quantity }, $set: { updatedAt: new Date() } },
+        { new: true },
+      )
+      .exec();
+    return updatedProduct ? this.toDomain(updatedProduct) : null;
+  }
 }

@@ -37,7 +37,7 @@ export function RoleBasedDashboard() {
           <p className="mt-4 max-w-2xl text-white/78">{config.subtitle}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             {config.metrics.map((metric) => (
-              <span key={metric} className="rounded-2xl bg-white/14 px-4 py-3 text-sm font-black backdrop-blur">
+              <span key={metric} className="rounded-2xl bg-white/[0.14] px-4 py-3 text-sm font-black backdrop-blur">
                 {metric}
               </span>
             ))}
@@ -45,7 +45,7 @@ export function RoleBasedDashboard() {
         </div>
         <div className="grid grid-cols-3 gap-3 self-end">
           {config.icons.map((Icon, index) => (
-            <div key={index} className="grid aspect-square place-items-center rounded-3xl bg-white/12 backdrop-blur">
+            <div key={index} className="grid aspect-square place-items-center rounded-3xl bg-white/[0.12] backdrop-blur">
               <Icon size={38} />
             </div>
           ))}

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Search } from 'lucide-react';
+import { ListFilter, Search, Sparkles, Tag } from 'lucide-react';
 import { FormEvent, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SearchResultCard } from '../features/search/SearchResultCard';
@@ -18,6 +18,9 @@ export function SearchPage() {
     queryKey: ['search-service', q, category],
     queryFn: () => searchService.searchProducts({ q, category }),
   });
+  const activeQuery = data?.query || q;
+  const activeCategory = data?.category || category;
+  const totalResults = data?.total ?? 0;
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -29,44 +32,55 @@ export function SearchPage() {
 
   return (
     <div className="grid gap-6">
-      <section className="surface p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+      <section className="surface p-5 sm:p-6">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(420px,1.15fr)] lg:items-end">
           <div>
-            <span className="badge bg-campus-500/10 text-campus-600">Microservicio de busqueda</span>
-            <h1 className="mt-3 text-3xl font-black text-slate-950 dark:text-white">
-              Resultados
+            <h1 className="text-3xl font-black text-slate-950 dark:text-white">
+              Buscar productos
             </h1>
+            <p className="mt-2 max-w-xl text-sm font-semibold text-muted">
+              Encuentra articulos por nombre, descripcion, categoria o vendedor.
+            </p>
           </div>
 
-          <form onSubmit={submit} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px_auto] lg:min-w-[680px]">
-            <input
-              className="input"
-              value={queryValue}
-              onChange={(event) => setQueryValue(event.target.value)}
-              placeholder="q: nombre, descripcion, categoria o vendedor"
-            />
-            <input
-              className="input"
-              value={categoryValue}
-              onChange={(event) => setCategoryValue(event.target.value)}
-              placeholder="category"
-            />
-            <button className="btn-primary">
+          <form onSubmit={submit} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px_auto]">
+            <label className="grid gap-2 text-sm font-black text-slate-700 dark:text-slate-200">
+              Producto o palabra clave
+              <input
+                className="input h-11"
+                value={queryValue}
+                onChange={(event) => setQueryValue(event.target.value)}
+                placeholder="Buscar por nombre o vendedor"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-black text-slate-700 dark:text-slate-200">
+              Categoria
+              <input
+                className="input h-11"
+                value={categoryValue}
+                onChange={(event) => setCategoryValue(event.target.value)}
+                placeholder="Todas"
+              />
+            </label>
+            <button className="btn-primary h-11 self-end justify-center">
               <Search size={18} /> Buscar
             </button>
           </form>
         </div>
       </section>
 
-      <section className="flex flex-wrap items-center gap-3 text-sm font-bold text-slate-600 dark:text-slate-300">
-        <span className="rounded-2xl bg-white px-4 py-2 shadow-sm dark:bg-slate-900">
-          query: {data?.query || q || 'vacio'}
+      <section className="grid gap-3 sm:grid-cols-3">
+        <span className="inline-flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-600 shadow-sm dark:bg-slate-900 dark:text-slate-300">
+          <ListFilter size={18} className="text-campus-600 dark:text-campus-300" />
+          {activeQuery || activeCategory ? 'Filtros aplicados' : 'Sin filtros aplicados'}
         </span>
-        <span className="rounded-2xl bg-white px-4 py-2 shadow-sm dark:bg-slate-900">
-          category: {data?.category || category || 'vacia'}
+        <span className="inline-flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-600 shadow-sm dark:bg-slate-900 dark:text-slate-300">
+          <Tag size={18} className="text-brand-600 dark:text-brand-300" />
+          {activeCategory || 'Todas las categorias'}
         </span>
-        <span className="rounded-2xl bg-white px-4 py-2 shadow-sm dark:bg-slate-900">
-          total: {data?.total ?? 0}
+        <span className="inline-flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-600 shadow-sm dark:bg-slate-900 dark:text-slate-300">
+          <Sparkles size={18} className="text-amber-500" />
+          {totalResults} resultados encontrados
         </span>
       </section>
 
@@ -78,8 +92,8 @@ export function SearchPage() {
         </div>
       ) : isError ? (
         <EmptyState
-          title="No se pudo consultar busqueda"
-          description="El frontend no usa fallback aqui: revisa search-service o su coleccion product_search_results."
+          title="No pudimos cargar los resultados"
+          description="Intenta nuevamente en unos segundos o ajusta los filtros de busqueda."
         />
       ) : data?.results.length ? (
         <div className="grid gap-4">
@@ -89,8 +103,8 @@ export function SearchPage() {
         </div>
       ) : (
         <EmptyState
-          title="Sin resultados"
-          description="no se encontraron resultados para esta consulta."
+          title="No encontramos productos"
+          description="Prueba con otra palabra clave, revisa la categoria o elimina los filtros aplicados."
         />
       )}
     </div>

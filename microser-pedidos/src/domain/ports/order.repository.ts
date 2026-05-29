@@ -9,5 +9,10 @@ export interface OrderRepository {
   findByUserId(userId: CustomerId): Promise<Order[]>;
   findAll(): Promise<Order[]>;
   update(id: string, order: Partial<Order>): Promise<Order | null>;
+  updateStatusIfCurrent(
+    id: string,
+    currentStatus: string,
+    nextStatus: string,
+  ): Promise<Order | null>;
   delete(id: string): Promise<boolean>;
 }

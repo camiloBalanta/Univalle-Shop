@@ -63,6 +63,28 @@ export class MongoProductRepository implements IProductRepository {
       .exec();
   }
 
+  async decreaseStock(id: string, quantity: number): Promise<any | null> {
+    return this.productModel
+      .findOneAndUpdate(
+        { _id: id, stock: { $gte: quantity } },
+        { $inc: { stock: -quantity }, $set: { updatedAt: new Date() } },
+        { new: true },
+      )
+      .lean()
+      .exec();
+  }
+
+  async increaseStock(id: string, quantity: number): Promise<any | null> {
+    return this.productModel
+      .findByIdAndUpdate(
+        id,
+        { $inc: { stock: quantity }, $set: { updatedAt: new Date() } },
+        { new: true },
+      )
+      .lean()
+      .exec();
+  }
+
   async findLowStock(threshold: number): Promise<any[]> {
     return this.productModel.find({ stock: { $lt: threshold }, active: true }).lean().exec();
   }

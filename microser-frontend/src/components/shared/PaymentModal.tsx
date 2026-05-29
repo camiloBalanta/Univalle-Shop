@@ -10,7 +10,7 @@ export function PaymentModal() {
         <div>
           <h3 className="font-black">Pago seguro</h3>
           <p className="text-sm text-muted">
-            Usa el endpoint real `/payments/simulate/:orderId` con `amount` y `customerId`.
+            Tus datos están protegidos durante todo el proceso de compra.
           </p>
         </div>
       </div>

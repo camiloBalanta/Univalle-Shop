@@ -80,4 +80,20 @@ export class ProductController {
   async deleteProduct(@Param('id') id: string) {
     return this.productService.deleteProduct(id);
   }
+
+  @Post(':id/stock/decrease')
+  async decreaseStock(
+    @Param('id') id: string,
+    @Body() body: { quantity: number },
+  ) {
+    return this.productService.decreaseStock(id, Number(body.quantity));
+  }
+
+  @Post(':id/stock/increase')
+  async increaseStock(
+    @Param('id') id: string,
+    @Body() body: { quantity: number },
+  ) {
+    return this.productService.increaseStock(id, Number(body.quantity));
+  }
 }

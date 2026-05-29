@@ -122,7 +122,7 @@ export function InventoryPage() {
       <header className="grid gap-4 rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950/90">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <span className="inline-flex rounded-full bg-brand-100 px-3 py-1 text-sm font-black uppercase tracking-[0.28em] text-brand-700 dark:bg-brand-900/30 dark:text-brand-300">
+            <span className="inline-flex rounded-full bg-brand-100 px-3 py-1 text-sm font-black uppercase tracking-[0.28em] text-brand-700 dark:bg-brand-500/[0.14] dark:text-brand-100">
               Administración premium
             </span>
             <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 dark:text-white">

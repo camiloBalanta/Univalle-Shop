@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckoutForm } from '../components/cart/CheckoutForm';
 import { EmptyState } from '../components/ui/EmptyState';
 import { PaymentModal } from '../components/shared/PaymentModal';
@@ -14,6 +14,7 @@ export function CheckoutPage() {
   const items = useCartStore((state) => state.items);
   const clear = useCartStore((state) => state.clear);
   const notify = useUiStore((state) => state.notify);
+  const queryClient = useQueryClient();
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const checkout = useMutation({
@@ -32,7 +33,11 @@ export function CheckoutPage() {
     onSuccess: ({ order, payment }) => {
       if (payment.status === 'approved') {
         clear();
-        notify({ type: 'success', title: 'Pago aprobado', message: `Orden #${order.id}` });
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        order.items.forEach((item) => {
+          queryClient.invalidateQueries({ queryKey: ['product', item.productId] });
+        });
+        notify({ type: 'success', title: 'Pago aprobado', message: 'Tu pedido ha sido confirmado correctamente.' });
       } else {
         notify({ type: 'error', title: 'Pago rechazado', message: payment.message });
       }
@@ -41,7 +46,7 @@ export function CheckoutPage() {
       notify({
         type: 'error',
         title: 'No se pudo procesar la compra',
-        message: 'Revisa el microservicio de pagos o el servicio de ordenes.',
+        message: 'No se pudo completar tu compra. Intenta nuevamente en unos minutos.',
       });
     },
   });
@@ -71,19 +76,21 @@ export function CheckoutPage() {
             <span>Total</span>
             <span>{formatMoney(total)}</span>
           </div>
-          {checkout.isLoading && (
-            <p className="mt-4 text-sm text-muted">Procesando pago con el microservicio...</p>
+          {checkout.isPending && (
+            <p className="mt-4 text-sm text-muted">Procesando tu pago de forma segura...</p>
           )}
           {checkout.isError && (
             <p className="mt-4 text-sm font-bold text-red-700">
-              No se pudo conectar con el microservicio de pagos.
+              No se pudo procesar tu pago. Intenta nuevamente.
             </p>
           )}
           {checkout.data && (
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
-              <p className="text-sm font-bold">Pago: {checkout.data.payment.status}</p>
+              <p className="text-sm font-bold">Estado del pago: {checkout.data.payment.status}</p>
               <p className="text-sm text-muted">{checkout.data.payment.message}</p>
-              <p className="mt-3 text-xs text-slate-500">Pago generado: {checkout.data.payment.paymentId}</p>
+              <p className="mt-3 text-xs text-slate-500">
+                Podrás consultar el estado de tu pedido desde tu cuenta.
+              </p>
             </div>
           )}
         </div>
