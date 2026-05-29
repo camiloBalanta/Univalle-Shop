@@ -5,12 +5,13 @@ import { ProductController } from './infrastructure/controllers/product.controll
 import { ProductHandler } from './infrastructure/messaging/product.handler';
 import { ProductService } from './application/use-cases/product.service';
 import { ProductRepositoryImpl } from './infrastructure/persistence/product.repository.impl';
-import { ProductSchema } from './infrastructure/persistence/product.schema';
+import { ProductSchema } from './infrastructure/product.schema';
 import { ProductSaga } from './application/saga/product.saga';
 import { NotifyInventoryHandler } from './application/handlers/notify-inventory.handler';
 import { SyncCatalogHandler } from './application/handlers/sync-catalog.handler';
 import { CleanupProductHandler } from './application/handlers/cleanup-product.handler';
 import { Product } from './domain/entities/product.entity';
+import { SearchIndexClient } from './infrastructure/search/search-index.client';
 
 /**
  * Módulo principal de la aplicación
@@ -31,6 +32,7 @@ import { Product } from './domain/entities/product.entity';
   controllers: [ProductController, ProductHandler],
   providers: [
     ProductService,
+    SearchIndexClient,
     ProductSaga,
     NotifyInventoryHandler,
     SyncCatalogHandler,

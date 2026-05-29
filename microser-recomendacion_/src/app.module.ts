@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { APP_FILTER } from '@nestjs/core';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { HttpExceptionFilter } from './common/filters';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { HttpExceptionFilter } from './common/filters';
     ),
     RecommendationModule,
   ],
+  controllers: [HealthController],
   providers: [
     {
       provide: APP_FILTER,

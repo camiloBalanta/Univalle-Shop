@@ -14,6 +14,7 @@ import {
   RECOMMENDATION_REPOSITORY_TOKEN,
   EXTERNAL_SERVICE_PORT_TOKEN,
 } from '../ports/injection-tokens';
+import { ProductRatingService } from '../../application/services/product-rating.service';
 
 @Injectable()
 export class GetRecommendationsUseCase {
@@ -24,6 +25,7 @@ export class GetRecommendationsUseCase {
     private readonly repository: IRecommendationRepository,
     @Inject(EXTERNAL_SERVICE_PORT_TOKEN)
     private readonly externalService: IExternalServicePort,
+    private readonly productRatingService: ProductRatingService,
   ) {}
 
   async execute(userId: string): Promise<RecommendationEntity> {
@@ -32,17 +34,19 @@ export class GetRecommendationsUseCase {
     this.logger.log(
       `[UseCase] Obteniendo recomendaciones para usuario: ${userId}`,
     );
+    const catalog = await this.externalService.getCatalog();
     const existing = await this.repository.findByUserId(userId);
     if (existing) {
       this.logger.log(
-        `[UseCase] Recomendaciones en cache encontradas para: ${userId}`,
+        `[UseCase] Regenerando recomendaciones con catalogo actual para: ${userId}`,
       );
-      return existing;
+      await this.repository.delete(userId);
+      return await this.generateNewRecommendations(userId, catalog);
     }
     this.logger.log(
       `[UseCase] Generando nuevas recomendaciones para: ${userId}`,
     );
-    return await this.generateNewRecommendations(userId);
+    return await this.generateNewRecommendations(userId, catalog);
   }
 
   private validateUserId(userId: string): void {
@@ -55,23 +59,45 @@ export class GetRecommendationsUseCase {
 
   private async generateNewRecommendations(
     userId: string,
+    currentCatalog?: Array<{
+      productId: string;
+      product: string;
+      category: string;
+    }>,
   ): Promise<RecommendationEntity> {
     try {
-      const [orders, catalog, popular, similarUsers] = await Promise.all([
+      const [
+        orders,
+        catalog,
+        externalPopular,
+        similarUsers,
+        userRatings,
+        ratedPopular,
+      ] = await Promise.all([
         this.externalService.getUserOrders(userId),
-        this.externalService.getCatalog(),
+        currentCatalog
+          ? Promise.resolve(currentCatalog)
+          : this.externalService.getCatalog(),
         this.externalService.getPopularProducts(),
         this.externalService.getSimilarUsers(userId),
+        this.productRatingService.getUserRatings(userId),
+        this.productRatingService.getPopularProducts(),
       ]);
       this.logger.debug(
         `[UseCase] Datos externos obtenidos para usuario: ${userId}`,
       );
 
       const recommendations = this.calculateRecommendations(
-        orders.map((o) => o.product),
-        orders.map((o) => o.category),
+        [
+          ...orders.map((o) => o.product),
+          ...userRatings.map((rating) => rating.productName),
+        ],
+        [
+          ...orders.map((o) => o.category),
+          ...userRatings.map((rating) => rating.category ?? 'General'),
+        ],
         catalog,
-        popular,
+        ratedPopular.length > 0 ? ratedPopular : externalPopular,
         similarUsers.flatMap((u) => u.purchases),
       );
 
@@ -93,15 +119,17 @@ export class GetRecommendationsUseCase {
   private calculateRecommendations(
     boughtProducts: string[],
     userCategories: string[],
-    catalog: Array<{ product: string; category: string }>,
-    popular: Array<{ product: string; popularity: number }>,
+    catalog: Array<{ productId: string; product: string; category: string }>,
+    popular: Array<{ productId?: string; product: string; popularity: number }>,
     collaborativeProducts: string[],
   ): IRecommendationItem[] {
     return catalog
       .filter((p) => !boughtProducts.includes(p.product))
       .map((p) => {
         const categoryScore = userCategories.includes(p.category) ? 0.6 : 0.3;
-        const pop = popular.find((pp) => pp.product === p.product);
+        const pop = popular.find(
+          (pp) => pp.productId === p.productId || pp.product === p.product,
+        );
         const popularityScore = pop ? pop.popularity : 0.2;
         const collaborativeScore = collaborativeProducts.includes(p.product)
           ? 0.9
@@ -110,7 +138,12 @@ export class GetRecommendationsUseCase {
           categoryScore * 0.4 +
           popularityScore * 0.3 +
           collaborativeScore * 0.3;
-        return { product: p.product, score: Number(finalScore.toFixed(2)) };
+        return {
+          productId: p.productId,
+          product: p.product,
+          category: p.category,
+          score: Number(finalScore.toFixed(2)),
+        };
       })
       .sort((a, b) => b.score - a.score);
   }

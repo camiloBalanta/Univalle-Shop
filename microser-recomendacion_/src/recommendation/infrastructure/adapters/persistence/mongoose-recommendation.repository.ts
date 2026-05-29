@@ -130,7 +130,12 @@ export class MongooseRecommendationRepository implements IRecommendationReposito
   ): RecommendationEntity {
     return new RecommendationEntity(
       doc.userId,
-      doc.recommendations,
+      doc.recommendations.map((recommendation) => ({
+        productId: recommendation.productId,
+        product: recommendation.product,
+        category: recommendation.category,
+        score: recommendation.score,
+      })),
       doc.createdAt,
       doc.updatedAt,
       doc._id?.toString(),

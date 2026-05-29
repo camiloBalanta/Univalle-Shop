@@ -29,8 +29,8 @@ export function Sidebar() {
         className={`fixed inset-0 z-40 bg-slate-950/50 transition lg:hidden ${sidebarOpen ? 'block' : 'hidden'}`}
         onClick={() => setSidebarOpen(false)}
       />
-      <aside className={`fixed left-0 top-0 z-50 h-screen w-80 border-r border-slate-200 bg-white p-4 transition-transform lg:sticky lg:top-[6.25rem] lg:z-20 lg:h-[calc(100vh-7.5rem)] lg:w-full lg:translate-x-0 lg:rounded-3xl lg:border lg:shadow-card dark:border-slate-800 dark:bg-slate-950 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="mb-6 flex items-center justify-between lg:hidden">
+      <aside className={`fixed left-0 top-20 z-50 h-[calc(100vh-5rem)] w-80 border-r border-slate-200 bg-white p-4 transition-transform rounded-tr-3xl rounded-br-3xl shadow-card dark:border-slate-800 dark:bg-slate-950 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="mb-6 flex items-center justify-between">
           <strong className="text-lg font-black">Menu</strong>
           <button className="grid h-10 w-10 place-items-center rounded-xl bg-slate-100 dark:bg-slate-800" onClick={() => setSidebarOpen(false)}>
             <X size={20} />

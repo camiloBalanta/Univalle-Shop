@@ -6,7 +6,16 @@
  * NO contiene lógica de negocio.
  */
 
-import { Controller, Get, Put, Delete, HttpCode, Logger } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Put,
+  Post,
+  Delete,
+  HttpCode,
+  Logger,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -17,6 +26,10 @@ import {
 import { RecommendationApplicationService } from '../../application/services/recommendation-application.service';
 import { GetRecommendationsResponseDto } from '../../application/dto/get-recommendations.dto';
 import { ValidateUserIdParam } from '../../../common/decorators/validate-user-id-param.decorator';
+import {
+  ProductRatingResponseDto,
+  RateProductDto,
+} from '../../application/dto/rate-product.dto';
 
 @ApiTags('Recomendaciones')
 @Controller('recommendations')
@@ -26,6 +39,22 @@ export class RecommendationController {
   constructor(
     private readonly applicationService: RecommendationApplicationService,
   ) {}
+
+  @Post('ratings')
+  async rateProduct(
+    @Body() dto: RateProductDto,
+  ): Promise<ProductRatingResponseDto> {
+    this.logger.log(`[HTTP] POST /recommendations/ratings`);
+    return this.applicationService.rateProduct(dto);
+  }
+
+  @Get('ratings/:userId')
+  async getUserRatings(
+    @ValidateUserIdParam() userId: string,
+  ): Promise<ProductRatingResponseDto[]> {
+    this.logger.log(`[HTTP] GET /recommendations/ratings/${userId}`);
+    return this.applicationService.getUserRatings(userId);
+  }
 
   /**
    * GET /recommendations/:userId

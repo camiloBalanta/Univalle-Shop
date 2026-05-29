@@ -5,12 +5,13 @@ import { useCartStore } from '../../store/cart.store';
 import { useUiStore } from '../../store/ui.store';
 import { Product } from '../../types/domain';
 import { formatMoney } from '../../utils/formatters';
+import { getProductImageUrl } from '../../utils/image';
 
 export function ProductCard({ product }: { product: Product }) {
   const addProduct = useCartStore((state) => state.addProduct);
   const notify = useUiStore((state) => state.notify);
 
-  const imageUrl = product.images?.[0];
+  const imageUrl = getProductImageUrl(product);
 
   return (
     <motion.article
@@ -25,6 +26,9 @@ export function ProductCard({ product }: { product: Product }) {
               src={imageUrl}
               alt={product.name}
               className="h-full w-full object-cover"
+              onError={(event) => {
+                event.currentTarget.src = 'https://placehold.co/600x400?text=Sin+Imagen';
+              }}
             />
           ) : (
             <div className="grid h-full w-full place-items-center">

@@ -1,7 +1,9 @@
 
 
 export interface IRecommendationItemDto {
+  productId?: string;
   product: string;
+  category?: string;
   score: number;
 }
 

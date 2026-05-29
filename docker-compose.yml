@@ -38,6 +38,7 @@ services:
       - PORT=${CATALOG_SERVICE_PORT:-3000}
       - MONGO_URI=${CATALOG_MONGO_URI}
       - MONGODB_URI=${CATALOG_MONGO_URI}
+      - SEARCH_SERVICE_URL=${SEARCH_SERVICE_URL:-http://search-service:3001/search}
     networks:
       - univalle-network
     restart: unless-stopped
@@ -125,6 +126,9 @@ services:
       - PORT=${RECOMMENDATION_SERVICE_PORT:-3000}
       - MONGO_URI=${RECOMMENDATION_MONGO_URI}
       - MONGO_DB_NAME=${RECOMMENDATION_MONGO_DB_NAME:-recommendation}
+      - CATALOG_SERVICE_URL=${CATALOG_SERVICE_URL:-http://catalog-service:3000}
+      - ORDERS_SERVICE_URL=${ORDERS_SERVICE_URL:-http://orders-service:3004}
+      - USERS_SERVICE_URL=${USERS_SERVICE_URL:-http://users-service:3000}
     networks:
       - univalle-network
     restart: unless-stopped

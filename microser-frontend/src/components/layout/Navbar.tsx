@@ -21,8 +21,9 @@ export function Navbar() {
       <div className="container-app">
         <div className="flex h-20 items-center gap-4">
           <button
-            className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 lg:hidden dark:border-slate-700"
+            className="grid h-11 w-11 place-items-center rounded-xl border border-slate-200 dark:border-slate-700"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Abrir menú"
           >
             <Menu size={21} />
           </button>
@@ -49,20 +50,6 @@ export function Navbar() {
           </button>
           <UserMenu />
         </div>
-        <nav className="hidden h-11 items-center gap-6 overflow-x-auto text-sm font-extrabold text-slate-600 md:flex dark:text-slate-300">
-          <Link to="/catalog" className="whitespace-nowrap transition hover:text-brand-600">
-            Catalogo
-          </Link>
-          <Link to="/search" className="whitespace-nowrap transition hover:text-brand-600">
-            Busqueda
-          </Link>
-          <Link to="/orders" className="whitespace-nowrap transition hover:text-brand-600">
-            Ordenes
-          </Link>
-          <Link to="/recommendations" className="whitespace-nowrap transition hover:text-brand-600">
-            Recomendaciones
-          </Link>
-        </nav>
       </div>
     </header>
   );

@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Put,
+  Patch,
   Delete,
   Param,
   Body,
@@ -39,6 +40,11 @@ export class ProductController {
     return this.productService.getProductById(id);
   }
 
+  @Post('sync-search')
+  async syncSearchIndex() {
+    return this.productService.syncSearchIndex();
+  }
+
   /**
    * POST /products
    * Crea un nuevo producto
@@ -46,6 +52,15 @@ export class ProductController {
   @Post()
   async createProduct(@Body() dto: CreateProductDto) {
     return this.productService.createProduct(dto);
+  }
+
+  /**
+   * PATCH /products/:id
+   * Actualiza parcialmente un producto existente
+   */
+  @Patch(':id')
+  async patchProduct(@Param('id') id: string, @Body() dto: UpdateProductDto) {
+    return this.productService.updateProduct(id, dto);
   }
 
   /**

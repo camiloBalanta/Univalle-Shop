@@ -1,11 +1,3 @@
-/**
- * ADAPTADOR: External Service Port Implementation
- *
- * Implementa la interfaz IExternalServicePort.
- * Proporciona datos de otros microservicios o fuentes externas.
- * Actualmente usa datos simulados, pero puede integrarse con APIs reales.
- */
-
 import { Injectable, Logger } from '@nestjs/common';
 import {
   IExternalServicePort,
@@ -15,98 +7,132 @@ import {
   ISimilarUser,
 } from '../../domain/ports/external-service.port';
 
+type CatalogServiceProduct = {
+  id?: string;
+  _id?: string;
+  name: string;
+  category?: string;
+};
+
+type OrdersServiceOrder = {
+  customerId: string;
+  status?: string;
+  createdAt?: string;
+  date?: string;
+  items: Array<{
+    productId: string;
+    quantity: number;
+    price: number;
+  }>;
+};
+
 @Injectable()
 export class ExternalServiceAdapter implements IExternalServicePort {
   private readonly logger = new Logger(ExternalServiceAdapter.name);
+  private readonly catalogUrl =
+    process.env.CATALOG_SERVICE_URL?.replace(/\/$/, '') ??
+    'http://catalog-service:3000';
+  private readonly ordersUrl =
+    process.env.ORDERS_SERVICE_URL?.replace(/\/$/, '') ??
+    'http://orders-service:3004';
+  private readonly usersUrl =
+    process.env.USERS_SERVICE_URL?.replace(/\/$/, '') ??
+    'http://users-service:3000';
 
-  /**
-   * Obtiene órdenes de un usuario desde el Servicio de Órdenes
-   * TODO: Integrar con Orders Microservice (puerto 3001)
-   */
   async getUserOrders(userId: string): Promise<IOrder[]> {
-    this.logger.debug(
-      `[Adaptador Externo] Obteniendo órdenes para usuario: ${userId}`,
+    this.logger.debug(`[External] Getting orders for user: ${userId}`);
+
+    const catalog = await this.getCatalog();
+    const orders = await this.callExternalService<OrdersServiceOrder[]>(
+      `${this.ordersUrl}/orders/user/${encodeURIComponent(userId)}`,
     );
 
-    // Datos simulados - Reemplazar con llamada a Orders Service
-    return [
-      { product: 'Laptop', category: 'tech', date: new Date() },
-      { product: 'Mouse', category: 'tech', date: new Date() },
-    ];
+    const purchasedProducts = orders
+      .filter((order) => !order.status || order.status === 'paid' || order.status === 'completed')
+      .flatMap((order) =>
+        (order.items ?? []).map((item) => {
+          const product = catalog.find((p) => p.productId === item.productId);
+          return {
+            productId: item.productId,
+            product: product?.product ?? item.productId,
+            category: product?.category ?? 'General',
+            date: new Date(order.createdAt ?? order.date ?? Date.now()),
+            status: order.status,
+          };
+        }),
+      );
+
+    return purchasedProducts;
   }
 
-  /**
-   * Obtiene catálogo de productos desde el Servicio de Catálogo
-   * TODO: Integrar con Catalog Microservice (puerto 3002)
-   */
   async getCatalog(): Promise<ICatalogProduct[]> {
-    this.logger.debug(`[Adaptador Externo] Obteniendo catálogo de productos`);
-
-    // Datos simulados - Reemplazar con llamada a Catalog Service
-    return [
-      { product: 'Laptop', category: 'tech' },
-      { product: 'Mouse', category: 'tech' },
-      { product: 'Teclado', category: 'tech' },
-      { product: 'Monitor', category: 'tech' },
-      { product: 'Audifonos', category: 'tech' },
-      { product: 'Silla', category: 'home' },
-      { product: 'Escritorio', category: 'home' },
-      { product: 'Lampara', category: 'home' },
-    ];
-  }
-
-  /**
-   * Obtiene productos populares desde Analytics Service
-   * TODO: Integrar con Analytics/Orders Microservice
-   */
-  async getPopularProducts(): Promise<IPopularProduct[]> {
-    this.logger.debug(`[Adaptador Externo] Obteniendo productos populares`);
-
-    // Datos simulados - Reemplazar con análisis real de ventas
-    return [
-      { product: 'Monitor', popularity: 0.9 },
-      { product: 'Teclado', popularity: 0.85 },
-      { product: 'Audifonos', popularity: 0.8 },
-      { product: 'Silla', popularity: 0.6 },
-      { product: 'Escritorio', popularity: 0.55 },
-    ];
-  }
-
-  /**
-   * Obtiene usuarios similares mediante análisis colaborativo
-   * TODO: Integrar con Machine Learning Service o análisis de usuarios
-   */
-  async getSimilarUsers(userId: string): Promise<ISimilarUser[]> {
-    this.logger.debug(
-      `[Adaptador Externo] Obteniendo usuarios similares a: ${userId}`,
+    this.logger.debug('[External] Getting product catalog');
+    const products = await this.callExternalService<CatalogServiceProduct[]>(
+      `${this.catalogUrl}/products`,
     );
 
-    // Datos simulados - Reemplazar con análisis colaborativo real
-    return [
-      { userId: '999', purchases: ['Monitor', 'Audifonos'] },
-      { userId: '888', purchases: ['Teclado', 'Silla'] },
-    ];
+    return products.map((product) => ({
+      productId: product.id ?? product._id ?? product.name,
+      product: product.name,
+      category: product.category ?? 'General',
+    }));
   }
 
-  /**
-   * Método auxiliar para realizar llamadas HTTP a otros servicios
-   * Se puede usar cuando se integren APIs reales
-   */
-  private async callExternalService(
+  async getPopularProducts(): Promise<IPopularProduct[]> {
+    this.logger.debug('[External] Getting popular products');
+    return [];
+  }
+
+  async getSimilarUsers(userId: string): Promise<ISimilarUser[]> {
+    this.logger.debug(`[External] Getting similar users for: ${userId}`);
+
+    const orders = await this.callExternalService<OrdersServiceOrder[]>(
+      `${this.ordersUrl}/orders`,
+    );
+
+    const currentUserProductIds = new Set(
+      orders
+        .filter((order) => order.customerId === userId)
+        .flatMap((order) => order.items.map((item) => item.productId)),
+    );
+
+    const users = orders.reduce((acc, order) => {
+      if (order.customerId === userId) return acc;
+      const purchases = order.items.map((item) => item.productId);
+      if (!acc[order.customerId]) acc[order.customerId] = new Set<string>();
+      purchases.forEach((productId) => acc[order.customerId].add(productId));
+      return acc;
+    }, {} as Record<string, Set<string>>);
+
+    return Object.entries(users)
+      .map(([customerId, products]) => ({
+        userId: customerId,
+        purchases: Array.from(products).filter((productId) =>
+          currentUserProductIds.has(productId),
+        ),
+      }))
+      .filter((user) => user.purchases.length > 0)
+      .slice(0, 5);
+  }
+
+  private async callExternalService<T>(
     url: string,
     method: string = 'GET',
-  ): Promise<any> {
+  ): Promise<T> {
     try {
-      this.logger.debug(`[Adaptador Externo] Llamando a: ${url}`);
-      // Implementar cuando se integren servicios reales
-      // const response = await fetch(url, { method });
-      // return response.json();
+      const response = await fetch(url, { method });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return (await response.json()) as T;
     } catch (error) {
       this.logger.error(
-        `[Adaptador Externo] Error llamando a ${url}:`,
-        error.message,
+        `[External] Error calling ${url}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
       );
       throw error;
     }
   }
+
 }

@@ -8,14 +8,22 @@ export class Recommendation {
   @Prop({ required: true, unique: true })
   userId: string;
 
-  @Prop([
-    {
-      product: String,
-      score: Number,
-    },
-  ])
+  @Prop({
+    type: [
+      {
+        _id: false,
+        productId: String,
+        product: String,
+        category: String,
+        score: Number,
+      },
+    ],
+    default: [],
+  })
   recommendations: {
+    productId?: string;
     product: string;
+    category?: string;
     score: number;
   }[];
 

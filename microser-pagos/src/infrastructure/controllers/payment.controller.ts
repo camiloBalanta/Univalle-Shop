@@ -86,7 +86,7 @@ export class PaymentController {
       const ordersServiceUrl =
         process.env.ORDERS_SERVICE_HOST_PORT || 'http://orders-service:3004';
 
-      await fetch(`http://orders-service:3004/orders/${orderId}/status`, {
+      await fetch(`${ordersServiceUrl}/orders/${orderId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: orderStatus }),

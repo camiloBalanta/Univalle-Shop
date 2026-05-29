@@ -8,6 +8,7 @@ import { UpdateProductDto } from '../dtos/update-product.dto';
 import { ProductCreatedEvent } from '../../domain/events/product-created.event';
 import { ProductUpdatedEvent } from '../../domain/events/product-updated.event';
 import { ProductDeletedEvent } from '../../domain/events/product-deleted.event';
+import { SearchIndexClient } from '../../infrastructure/search/search-index.client';
 
 /**
  * Servicio de aplicación: ProductService
@@ -20,6 +21,7 @@ export class ProductService {
     @Inject('IProductRepository')
     private readonly repository: IProductRepository,
     private readonly eventBus: EventBus,
+    private readonly searchIndexClient: SearchIndexClient,
   ) {}
 
   /**
@@ -36,20 +38,48 @@ export class ProductService {
     return this.repository.findById(id);
   }
 
+  async syncSearchIndex(): Promise<{
+    deletedFromIndex: number;
+    synced: number;
+    total: number;
+  }> {
+    const products = await this.repository.findAll();
+    const deletedFromIndex = await this.searchIndexClient.clearProducts();
+
+    for (const product of products) {
+      await this.searchIndexClient.upsertProduct(product);
+    }
+
+    return {
+      deletedFromIndex,
+      synced: products.length,
+      total: products.length,
+    };
+  }
+
   /**
    * Crear un nuevo producto
    * Valida el DTO y crea la entidad de dominio
    */
   async createProduct(dto: CreateProductDto): Promise<Product> {
+    const images = dto.images?.length
+      ? dto.images
+      : dto.imageUrl
+      ? [dto.imageUrl]
+      : [];
+
     const product = new Product(
       randomUUID(),
       dto.name,
       dto.price,
       dto.description,
-      dto.images ?? [],
+      images,
+      dto.category,
+      dto.stock ?? 0,
     );
 
     const created = await this.repository.create(product);
+    await this.searchIndexClient.upsertProduct(created);
     this.eventBus.publish(
       new ProductCreatedEvent(
         created.id,
@@ -69,9 +99,15 @@ export class ProductService {
     id: string,
     dto: UpdateProductDto,
   ): Promise<Product | null> {
-    const updated = await this.repository.update(id, dto);
+    const updates: Partial<UpdateProductDto> = { ...dto };
+    if (!updates.images?.length && updates.imageUrl) {
+      updates.images = [updates.imageUrl];
+    }
+
+    const updated = await this.repository.update(id, updates);
 
     if (updated) {
+      await this.searchIndexClient.upsertProduct(updated);
       this.eventBus.publish(
         new ProductUpdatedEvent(updated.id, {
           name: updated.name,
@@ -91,6 +127,7 @@ export class ProductService {
     const deleted = await this.repository.delete(id);
 
     if (deleted) {
+      await this.searchIndexClient.deleteProduct(id);
       this.eventBus.publish(new ProductDeletedEvent(id));
     }
 

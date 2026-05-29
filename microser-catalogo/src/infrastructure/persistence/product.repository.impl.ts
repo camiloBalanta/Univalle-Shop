@@ -23,6 +23,8 @@ export class ProductRepositoryImpl implements IProductRepository {
       document.price,
       document.description,
       document.images ?? [],
+      document.category,
+      document.stock ?? 0,
     );
   }
 
@@ -43,6 +45,8 @@ export class ProductRepositoryImpl implements IProductRepository {
       price: product.price,
       description: product.description,
       images: product.images,
+      category: product.category,
+      stock: product.stock,
     });
     return this.toDomain(createdProduct);
   }

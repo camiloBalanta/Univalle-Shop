@@ -8,7 +8,7 @@ export function MarketplaceLayout() {
   return (
     <div className="min-h-screen text-slate-950 dark:text-white">
       <Navbar />
-      <div className="grid w-full gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-8">
+      <div className="grid w-full gap-5 px-4 py-5 sm:px-6 lg:px-8">
         <Sidebar />
         <main className="min-w-0 overflow-hidden">
           <Outlet />

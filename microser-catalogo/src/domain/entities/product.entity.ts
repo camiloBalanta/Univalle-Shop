@@ -10,6 +10,8 @@ export class Product {
     public price: number,
     public description?: string,
     public images: string[] = [],
+    public category?: string,
+    public stock: number = 0,
   ) {
     this.validate();
   }
@@ -21,6 +23,9 @@ export class Product {
   private validate(): void {
     if (this.price < 0) {
       throw new Error('El precio del producto no puede ser negativo');
+    }
+    if (this.stock < 0) {
+      throw new Error('El stock del producto no puede ser negativo');
     }
     if (!this.name || this.name.trim().length === 0) {
       throw new Error('El nombre del producto no puede estar vacío');
@@ -54,7 +59,16 @@ export class Product {
    * Método de dominio: Actualizar imágenes
    */
   updateImages(images: string[]): void {
-    this.images = images || [];
+    this.images = Array.isArray(images) ? images : [];
+  }
+
+  updateCategory(category: string | undefined): void {
+    this.category = category;
+  }
+
+  updateStock(stock: number): void {
+    this.stock = stock;
+    this.validate();
   }
 
   /**

@@ -50,8 +50,8 @@ export function HomePage() {
       <section className="grid gap-4 md:grid-cols-3">
         {[
           ['Entrega campus', 'Recibe en puntos autorizados.', Truck],
-          ['Pagos seguros', 'Flujo preparado para microservicio.', ShieldCheck],
-          ['Recomendaciones', 'Experiencia distinta por rol.', Zap],
+          ['Pagos seguros', 'Transacciones protegidas.', ShieldCheck],
+          ['Recomendaciones', 'Productos sugeridos basados en tu historial de compras.', Zap],
         ].map(([title, text, Icon]) => (
           <motion.article key={title as string} whileHover={{ y: -4 }} className="surface flex items-center gap-4 p-5">
             <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-50 text-brand-700 dark:bg-brand-950/40">
@@ -74,17 +74,16 @@ export function HomePage() {
       ) : isError ? (
         <EmptyState
           title="Catalogo no disponible"
-          description="No se muestran productos inventados. Revisa el microservicio de catalogo."
+          description="Error."
         />
       ) : products.length === 0 ? (
         <EmptyState
           title="Catalogo vacio"
-          description="El microservicio de catalogo respondio, pero Atlas no tiene productos registrados."
+          description="No hay productos disponibles en el catalogo."
         />
       ) : (
         <ProductCarousel
           title="Productos del catalogo"
-          subtitle="Datos reales servidos por catalog-service"
           products={products.slice(0, 5)}
         />
       )}

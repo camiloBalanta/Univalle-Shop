@@ -14,6 +14,7 @@ import {
   RECOMMENDATION_REPOSITORY_TOKEN,
   EXTERNAL_SERVICE_PORT_TOKEN,
 } from '../ports/injection-tokens';
+import { ProductRatingService } from '../../application/services/product-rating.service';
 
 @Injectable()
 export class UpdateRecommendationsUseCase extends GetRecommendationsUseCase {
@@ -22,8 +23,9 @@ export class UpdateRecommendationsUseCase extends GetRecommendationsUseCase {
     private readonly repo: IRecommendationRepository,
     @Inject(EXTERNAL_SERVICE_PORT_TOKEN)
     private readonly externalSvc: IExternalServicePort,
+    private readonly productRatingSvc: ProductRatingService,
   ) {
-    super(repo, externalSvc);
+    super(repo, externalSvc, productRatingSvc);
   }
 
   async execute(userId: string): Promise<RecommendationEntity> {

@@ -34,11 +34,8 @@ export function SearchPage() {
           <div>
             <span className="badge bg-campus-500/10 text-campus-600">Microservicio de busqueda</span>
             <h1 className="mt-3 text-3xl font-black text-slate-950 dark:text-white">
-              Resultados desde `/search`
+              Resultados
             </h1>
-            <p className="mt-2 text-sm text-muted dark:text-slate-400">
-              Esta vista solo usa el contrato del microservicio: `q`, `category`, `total` y `results`.
-            </p>
           </div>
 
           <form onSubmit={submit} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px_auto] lg:min-w-[680px]">
@@ -92,8 +89,8 @@ export function SearchPage() {
         </div>
       ) : (
         <EmptyState
-          title="Sin resultados en el microservicio"
-          description="La coleccion product_search_results no devolvio coincidencias para esos parametros."
+          title="Sin resultados"
+          description="no se encontraron resultados para esta consulta."
         />
       )}
     </div>

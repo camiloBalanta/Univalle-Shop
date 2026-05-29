@@ -8,6 +8,7 @@ import { DeleteRecommendationsUseCase } from './domain/use-cases/delete-recommen
 
 // Application Services
 import { RecommendationApplicationService } from './application/services/recommendation-application.service';
+import { ProductRatingService } from './application/services/product-rating.service';
 
 // Infrastructure Adapters
 import { RecommendationController } from './infrastructure/controllers/recommendation.controller';
@@ -17,6 +18,10 @@ import {
   Recommendation,
   RecommendationSchema,
 } from './infrastructure/adapters/persistence/recommendation.schema';
+import {
+  ProductRating,
+  ProductRatingSchema,
+} from './infrastructure/adapters/persistence/product-rating.schema';
 
 // Injection Tokens
 import {
@@ -28,6 +33,7 @@ import {
   imports: [
     MongooseModule.forFeature([
       { name: Recommendation.name, schema: RecommendationSchema },
+      { name: ProductRating.name, schema: ProductRatingSchema },
     ]),
   ],
   controllers: [RecommendationController],
@@ -39,6 +45,7 @@ import {
 
     // Application Services
     RecommendationApplicationService,
+    ProductRatingService,
 
     // Infrastructure Adapters
     {

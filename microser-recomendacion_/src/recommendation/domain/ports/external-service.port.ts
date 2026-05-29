@@ -6,17 +6,21 @@
  */
 
 export interface IOrder {
+  productId?: string;
   product: string;
   category: string;
   date: Date;
+  status?: string;
 }
 
 export interface ICatalogProduct {
+  productId: string;
   product: string;
   category: string;
 }
 
 export interface IPopularProduct {
+  productId?: string;
   product: string;
   popularity: number;
 }

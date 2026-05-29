@@ -6,7 +6,9 @@
  */
 
 export interface IRecommendationItem {
+  productId?: string;
   product: string;
+  category?: string;
   score: number;
 }
 

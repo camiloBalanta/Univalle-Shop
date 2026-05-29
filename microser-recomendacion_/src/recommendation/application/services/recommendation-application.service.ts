@@ -11,6 +11,11 @@ import { UpdateRecommendationsUseCase } from '../../domain/use-cases/update-reco
 import { DeleteRecommendationsUseCase } from '../../domain/use-cases/delete-recommendations.use-case';
 import { GetRecommendationsResponseDto } from '../dto/get-recommendations.dto';
 import { RecommendationEntity } from '../../domain/entities/recommendation.entity';
+import {
+  ProductRatingResponseDto,
+  RateProductDto,
+} from '../dto/rate-product.dto';
+import { ProductRatingService } from './product-rating.service';
 
 @Injectable()
 export class RecommendationApplicationService {
@@ -20,6 +25,7 @@ export class RecommendationApplicationService {
     private readonly getRecommendationsUseCase: GetRecommendationsUseCase,
     private readonly updateRecommendationsUseCase: UpdateRecommendationsUseCase,
     private readonly deleteRecommendationsUseCase: DeleteRecommendationsUseCase,
+    private readonly productRatingService: ProductRatingService,
   ) {}
 
   /**
@@ -94,6 +100,24 @@ export class RecommendationApplicationService {
       );
       throw error;
     }
+  }
+
+  async rateProduct(dto: RateProductDto): Promise<ProductRatingResponseDto> {
+    const rating = await this.productRatingService.rateProduct(dto);
+
+    try {
+      await this.deleteRecommendationsUseCase.execute(dto.userId);
+    } catch (error) {
+      this.logger.debug(
+        `[Aplicacion] No habia cache de recomendaciones para ${dto.userId}`,
+      );
+    }
+
+    return rating;
+  }
+
+  async getUserRatings(userId: string): Promise<ProductRatingResponseDto[]> {
+    return this.productRatingService.getUserRatings(userId);
   }
 
   /**

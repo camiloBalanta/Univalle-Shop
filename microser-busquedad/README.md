@@ -89,13 +89,13 @@ Valores relevantes:
 
 5. La API quedara disponible en `http://localhost:3000` o en el valor definido en `PORT`.
 
-## Cargar datos de ejemplo
+## Indice de productos
 
-El repositorio incluye `mongo-seed.json` con productos de ejemplo para la coleccion `product_search_results`.
+La coleccion `product_search_results` no debe cargarse con productos quemados.
 
-Importa ese archivo en la base configurada en `.env` usando MongoDB Compass o la interfaz de MongoDB Atlas.
+El indice se alimenta desde el microservicio de catalogo cuando se crean, actualizan o eliminan productos.
 
-Nota: hoy no existe un script de seed automatico dentro del proyecto.
+Si necesitas reconstruirlo, ejecuta la sincronizacion desde catalogo: `POST /catalog/products/sync-search`.
 
 ## Endpoints
 

@@ -6,7 +6,7 @@ export type ProductSearchResultDocumentType =
 
 @Schema({ collection: 'product_search_results' })
 export class ProductSearchResultDocument {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true, index: true })
   productId!: string;
 
   @Prop({ required: true })
@@ -29,6 +29,15 @@ export class ProductSearchResultDocument {
 
   @Prop({ required: true })
   seller!: string;
+
+  @Prop({ type: [String], default: [] })
+  tags!: string[];
+
+  @Prop({ required: true, default: '' })
+  normalizedText!: string;
+
+  @Prop({ required: true, default: '' })
+  normalizedCategory!: string;
 }
 
 export const ProductSearchResultSchema = SchemaFactory.createForClass(
@@ -40,4 +49,6 @@ ProductSearchResultSchema.index({
   description: 'text',
   category: 'text',
   seller: 'text',
+  tags: 'text',
+  normalizedText: 'text',
 });

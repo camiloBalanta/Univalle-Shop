@@ -8,5 +8,6 @@ export class ProductSearchResult {
     public readonly imageUrl: string,
     public readonly stock: number,
     public readonly seller: string,
+    public readonly tags: string[] = [],
   ) {}
 }

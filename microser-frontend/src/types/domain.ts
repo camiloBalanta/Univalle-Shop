@@ -25,7 +25,12 @@ export type Product = {
   name: string;
   price: number;
   description?: string;
+  productId?: string; // Mapeo para compatibilidad con microservicio de búsqueda
+  category?: string; // Mapeo para compatibilidad con microservicio de búsqueda
+  stock?: number;
   images?: string[];
+  // Campo de imagen única (Búsqueda) vs arreglo (Catálogo)
+  imageUrl?: string;
 };
 
 export type ProductSearchResult = {
@@ -37,6 +42,7 @@ export type ProductSearchResult = {
   imageUrl: string;
   stock: number;
   seller: string;
+  tags?: string[];
 };
 
 export type SearchResponse = {
@@ -74,7 +80,9 @@ export type PaymentResult = {
 };
 
 export type Recommendation = {
+  productId?: string;
   product: string;
+  category?: string;
   score: number;
 };
 
@@ -85,6 +93,17 @@ export type RecommendationsResponse = {
   updatedAt: string;
   topRecommendations?: Recommendation[];
   averageScore?: number;
+};
+
+export type ProductRating = {
+  userId: string;
+  productId: string;
+  productName: string;
+  category?: string;
+  rating: number;
+  review?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Notification = {
