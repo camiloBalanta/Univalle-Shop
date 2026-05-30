@@ -57,16 +57,16 @@ export class PaymentsController {
   ) {
     const transactionId = `PAY-${Date.now()}`;
     const approved = Math.random() < 0.7;
-    let paymentStatus = approved ? PaymentStatus.APPROVED : PaymentStatus.REJECTED;
+    let paymentStatus = approved ? PaymentStatus.COMPLETED : PaymentStatus.REJECTED;
     let message =
-      paymentStatus === PaymentStatus.APPROVED
+      paymentStatus === PaymentStatus.COMPLETED
         ? 'Pago procesado exitosamente'
         : 'Pago rechazado. Intenta de nuevo.';
 
     const order = await this.paymentsService.getOrder(orderId);
 
     try {
-      const orderStatus = approved ? 'paid' : 'payment_rejected';
+      const orderStatus = approved ? 'completed' : 'payment_rejected';
       const ordersServiceUrl =
         this.getEnv('ORDERS_SERVICE_HOST_PORT') || 'http://orders-service:3004';
 
@@ -88,6 +88,36 @@ export class PaymentsController {
         paymentStatus = PaymentStatus.REJECTED;
         message =
           'Pago no aprobado: no fue posible confirmar inventario para la orden.';
+      } else if (approved) {
+        const recommendationServiceUrl =
+          this.getEnv('RECOMMENDATION_SERVICE_URL') ||
+          'http://recommendation-service:3000';
+        const userId = body.customerId ?? order.customerId;
+
+        try {
+          const recResponse = await fetch(
+            `${recommendationServiceUrl}/recommendations/${encodeURIComponent(
+              userId,
+            )}`,
+            {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+            },
+          );
+
+          if (!recResponse.ok) {
+            const recErrorBody = await recResponse.text();
+            this.logger.warn(
+              `No se pudo actualizar recomendaciones para usuario ${userId}: ${recErrorBody}`,
+            );
+          }
+        } catch (recError) {
+          this.logger.warn(
+            `Error actualizando recomendaciones para usuario ${userId}: ${
+              recError instanceof Error ? recError.message : String(recError)
+            }`,
+          );
+        }
       }
     } catch (error) {
       this.logger.error(

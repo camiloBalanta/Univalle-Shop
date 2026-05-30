@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from '../components/shared/ProtectedRoute';
 import { MarketplaceLayout } from '../layouts/MarketplaceLayout';
 import { AuthPage } from '../pages/AuthPage';
@@ -7,6 +7,8 @@ import { CheckoutPage } from '../pages/CheckoutPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { HomePage } from '../pages/HomePage';
 import { InventoryPage } from '../pages/InventoryPage';
+import { AdminUsersPage } from '../pages/AdminUsersPage';
+import { AdminSettingsPage } from '../pages/AdminSettingsPage';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { OrdersPage } from '../pages/OrdersPage';
 import { ProductPage } from '../pages/ProductPage';
@@ -24,16 +26,21 @@ export function AppRoutes() {
         <Route path="catalog" element={<CategoriesPage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="recommendations" element={<RecommendationsPage />} />
+
         <Route element={<ProtectedRoute />}>
           <Route path="checkout" element={<CheckoutPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="dashboard" element={<DashboardPage />} />
         </Route>
-        <Route element={<ProtectedRoute roles={['administrativo']} />}>
-          <Route path="admin/inventory" element={<InventoryPage />} />
-          <Route path="admin/settings" element={<DashboardPage />} />
+
+        <Route path="admin" element={<ProtectedRoute roles={['administrativo']} />}>
+          <Route index element={<Navigate to="/admin/settings" replace />} />
+          <Route path="inventory" element={<InventoryPage />} />
+          <Route path="users" element={<AdminUsersPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
         </Route>
+
         <Route path="wishlist" element={<RecommendationsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

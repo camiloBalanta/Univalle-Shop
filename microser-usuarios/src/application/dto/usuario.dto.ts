@@ -1,11 +1,17 @@
 export class CrearUsuarioDTO {
   codigo: string;
   anioRegistro: number;
+  fullName?: string;
+  email?: string;
+  isActive?: boolean;
 }
 
 export class ActualizarUsuarioDTO {
   codigo?: string;
   anioRegistro?: number;
+  fullName?: string;
+  email?: string;
+  isActive?: boolean;
 }
 
 export class UsuarioResponseDTO {
@@ -13,6 +19,9 @@ export class UsuarioResponseDTO {
   codigo: string;
   anioRegistro: number;
   rol: string;
+  fullName: string;
+  email: string;
+  isActive: boolean;
   mustChangePassword: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -28,6 +37,9 @@ export class SolicitarAccesoResponseDTO {
   codigo: string;
   anioRegistro: number;
   rol: string;
+  fullName: string;
+  email: string;
+  isActive: boolean;
   mustChangePassword: boolean;
   message: string;
   temporaryPassword: string;

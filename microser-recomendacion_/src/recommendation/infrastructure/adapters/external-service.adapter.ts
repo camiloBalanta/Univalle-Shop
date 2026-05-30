@@ -48,7 +48,13 @@ export class ExternalServiceAdapter implements IExternalServicePort {
     );
 
     const purchasedProducts = orders
-      .filter((order) => !order.status || order.status === 'paid' || order.status === 'completed')
+      .filter(
+        (order) =>
+          !order.status ||
+          order.status === 'paid' ||
+          order.status === 'approved' ||
+          order.status === 'completed',
+      )
       .flatMap((order) =>
         (order.items ?? []).map((item) => {
           const product = catalog.find((p) => p.productId === item.productId);

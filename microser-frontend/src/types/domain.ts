@@ -15,6 +15,9 @@ export type Usuario = {
   codigo: string;
   anioRegistro: number;
   rol: UserRole;
+  fullName?: string;
+  email?: string;
+  isActive?: boolean;
   mustChangePassword: boolean;
   createdAt: string;
   updatedAt: string;

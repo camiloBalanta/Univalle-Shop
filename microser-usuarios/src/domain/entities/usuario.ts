@@ -7,6 +7,9 @@ interface UsuarioProps {
   anioRegistro: number;
   rol: UsuarioRol;
   passwordHash: string;
+  fullName: string;
+  email: string;
+  isActive: boolean;
   mustChangePassword: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -26,6 +29,9 @@ export class Usuario extends Entity<UsuarioProps> {
     codigo: string,
     anioRegistro: number,
     passwordHash: string,
+    fullName = '',
+    email = '',
+    isActive = true,
   ): Usuario {
     const now = new Date();
 
@@ -35,6 +41,9 @@ export class Usuario extends Entity<UsuarioProps> {
       anioRegistro,
       rol: Usuario.resolveRol(codigo),
       passwordHash,
+      fullName: fullName.trim(),
+      email: email.trim(),
+      isActive,
       mustChangePassword: true,
       createdAt: now,
       updatedAt: now,
@@ -46,6 +55,9 @@ export class Usuario extends Entity<UsuarioProps> {
       ...props,
       createdAt: new Date(props.createdAt),
       updatedAt: new Date(props.updatedAt),
+      fullName: props.fullName ?? '',
+      email: props.email ?? '',
+      isActive: props.isActive ?? true,
     });
   }
 
@@ -69,6 +81,17 @@ export class Usuario extends Entity<UsuarioProps> {
     this.props.codigo = codigo;
     this.props.anioRegistro = anioRegistro;
     this.props.rol = Usuario.resolveRol(codigo);
+    this.touch();
+  }
+
+  updateProfile(fullName: string, email: string): void {
+    this.props.fullName = fullName.trim();
+    this.props.email = email.trim();
+    this.touch();
+  }
+
+  setActive(isActive: boolean): void {
+    this.props.isActive = isActive;
     this.touch();
   }
 
@@ -98,6 +121,18 @@ export class Usuario extends Entity<UsuarioProps> {
 
   get rol(): UsuarioRol {
     return this.props.rol;
+  }
+
+  get fullName(): string {
+    return this.props.fullName;
+  }
+
+  get email(): string {
+    return this.props.email;
+  }
+
+  get isActive(): boolean {
+    return this.props.isActive;
   }
 
   get passwordHash(): string {

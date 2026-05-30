@@ -1,4 +1,4 @@
-import { BarChart3, Boxes, Heart, Home, Package, ReceiptText, Search, Settings, Sparkles, X } from 'lucide-react';
+import { BarChart3, Boxes, Heart, Home, Package, ReceiptText, Search, Settings, Sparkles, Users, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../../store/auth.store';
 import { useUiStore } from '../../store/ui.store';
@@ -14,6 +14,7 @@ const commonLinks = [
 const adminLinks = [
   { to: '/dashboard', label: 'Dashboard', icon: BarChart3 },
   { to: '/admin/inventory', label: 'Inventario', icon: Package },
+  { to: '/admin/users', label: 'Usuarios', icon: Users },
   { to: '/admin/settings', label: 'Gestion', icon: Settings },
 ];
 

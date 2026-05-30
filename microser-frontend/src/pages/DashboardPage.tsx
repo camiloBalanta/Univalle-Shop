@@ -10,7 +10,10 @@ export function DashboardPage() {
   const { data: products = [] } = useProducts();
   const { data: users = [] } = useUsers();
   const { data: recommendationsData } = useRecommendations();
-  const recommendations = recommendationsData?.topRecommendations ?? [];
+  const recommendations =
+    recommendationsData?.topRecommendations?.length > 0
+      ? recommendationsData.topRecommendations
+      : recommendationsData?.recommendations ?? [];
 
   return (
     <div className="grid gap-6">
@@ -39,7 +42,7 @@ export function DashboardPage() {
         {isAdmin && (
           <div className="surface p-6">
             <h2 className="text-xl font-black">Usuarios recientes</h2>
-            <p className="mt-1 text-sm text-muted">Lista de usuarios reales cargados desde el servicio de usuarios.</p>
+            <p className="mt-1 text-sm text-muted">Lista de usuarios.</p>
             <div className="mt-5 grid gap-3">
               {users.length > 0 ? (
                 users.slice(0, 4).map((user) => (

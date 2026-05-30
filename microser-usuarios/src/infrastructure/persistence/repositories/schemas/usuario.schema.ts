@@ -8,6 +8,9 @@ export interface UsuarioDocument {
   codigo: string;
   anioRegistro: number;
   rol: string;
+  fullName?: string;
+  email?: string;
+  isActive?: boolean;
   passwordHash: string;
   mustChangePassword: boolean;
   createdAt: Date;
@@ -51,6 +54,18 @@ export const usuarioCollectionValidator = {
       rol: {
         enum: ['administrativo', 'docente', 'estudiante'],
         description: 'Rol derivado del primer digito del codigo',
+      },
+      fullName: {
+        bsonType: 'string',
+        description: 'Nombre completo del usuario institucional',
+      },
+      email: {
+        bsonType: 'string',
+        description: 'Correo institucional del usuario',
+      },
+      isActive: {
+        bsonType: 'bool',
+        description: 'Indicador de usuario activo o inactivo',
       },
       passwordHash: {
         bsonType: 'string',

@@ -53,6 +53,14 @@ export class ActualizarUsuarioUseCase {
       );
     }
 
+    if (dto.fullName !== undefined || dto.email !== undefined) {
+      usuario.updateProfile(dto.fullName ?? usuario.fullName, dto.email ?? usuario.email);
+    }
+
+    if (typeof dto.isActive === 'boolean') {
+      usuario.setActive(dto.isActive);
+    }
+
     await this.usuarioRepository.save(usuario);
   }
 }

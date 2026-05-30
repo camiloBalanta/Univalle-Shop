@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { CheckoutForm } from '../components/cart/CheckoutForm';
 import { EmptyState } from '../components/ui/EmptyState';
-import { PaymentModal } from '../components/shared/PaymentModal';
+import { PaymentModal, type PaymentFormValues } from '../components/shared/PaymentModal';
 import { ordersService } from '../services/orders.service';
 import { paymentsService } from '../services/payments.service';
 import { useAuthStore } from '../store/auth.store';
@@ -15,10 +16,11 @@ export function CheckoutPage() {
   const clear = useCartStore((state) => state.clear);
   const notify = useUiStore((state) => state.notify);
   const queryClient = useQueryClient();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const checkout = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (paymentData: PaymentFormValues) => {
       const order = await ordersService.createOrder({
         customerId: session?.userId || 'guest',
         items,
@@ -27,6 +29,11 @@ export function CheckoutPage() {
       const payment = await paymentsService.simulate(order.id, {
         amount: order.totalAmount,
         customerId: session?.userId || 'guest',
+        paymentMethod: 'CARD',
+        cardNumber: paymentData.cardNumber,
+        cardHolder: paymentData.cardHolder,
+        expiration: paymentData.expiration,
+        cvv: paymentData.cvv,
       });
       return { order, payment };
     },
@@ -57,9 +64,18 @@ export function CheckoutPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-      <CheckoutForm onSubmit={() => checkout.mutate()} />
+      <CheckoutForm onSubmit={() => setShowPaymentModal(true)} />
       <aside className="surface h-fit p-6">
-        <PaymentModal />
+        <PaymentModal
+          open={showPaymentModal}
+          amount={total}
+          currency="COP"
+          onClose={() => setShowPaymentModal(false)}
+          onConfirm={(paymentData) => {
+            setShowPaymentModal(false);
+            checkout.mutate(paymentData);
+          }}
+        />
         <div className="mt-6">
           <h2 className="text-xl font-black">Resumen</h2>
           <div className="mt-5 grid gap-4">

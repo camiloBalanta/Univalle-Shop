@@ -50,6 +50,9 @@ export class CrearUsuarioUseCase {
       acceso.codigo,
       acceso.anioRegistro,
       passwordHash,
+      dto.fullName ?? '',
+      dto.email ?? '',
+      dto.isActive ?? true,
     );
     await this.applicationService.saveAndPublishEvents(usuario);
 
@@ -58,6 +61,9 @@ export class CrearUsuarioUseCase {
       codigo: usuario.codigo,
       anioRegistro: usuario.anioRegistro,
       rol: usuario.rol,
+      fullName: usuario.fullName,
+      email: usuario.email,
+      isActive: usuario.isActive,
       mustChangePassword: usuario.mustChangePassword,
       message:
         'Usuario creado. Se genero una contrasena temporal que debe cambiarse al ingresar.',

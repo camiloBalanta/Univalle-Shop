@@ -59,6 +59,9 @@ export class SolicitarAccesoUseCase {
       codigo: usuario.codigo,
       anioRegistro: usuario.anioRegistro,
       rol: usuario.rol,
+      fullName: usuario.fullName ?? '',
+      email: usuario.email ?? '',
+      isActive: usuario.isActive ?? true,
       mustChangePassword: usuario.mustChangePassword,
       message:
         'Se genero una contrasena temporal que debe cambiarse al ingresar.',

@@ -9,7 +9,6 @@ export function CategoriesPage() {
   return (
     <div className="grid gap-6">
       <div>
-        <span className="badge bg-campus-500/10 text-campus-600">Microservicio de catalogo</span>
         <h1 className="mt-3 text-3xl font-black">Catalogo de productos</h1>
         <p className="mt-1 text-muted">
         </p>

@@ -18,7 +18,7 @@ export class MongoUsuarioRepository implements IUsuarioRepository {
 
     await collection.updateOne(
       { _id: data.id },
-      { $set: { ...data, _id: data.id }, $unset: { email: '' } },
+      { $set: { ...data, _id: data.id } },
       { upsert: true }
     );
 

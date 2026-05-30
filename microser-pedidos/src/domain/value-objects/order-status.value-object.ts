@@ -55,6 +55,14 @@ export class OrderStatus {
     return new OrderStatus('paid');
   }
 
+  static approved(): OrderStatus {
+    return new OrderStatus('approved');
+  }
+
+  static completed(): OrderStatus {
+    return new OrderStatus('completed');
+  }
+
   static paymentRejected(): OrderStatus {
     return new OrderStatus('payment_rejected');
   }

@@ -24,8 +24,8 @@ export function RecommendationsPage() {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-3xl font-black">Recomendaciones personalizadas</h1>
-        <p className="mt-1 text-muted">Curadas para {roleLabel(session?.rol)}.</p>
+        <h1 className="text-3xl font-black">Recomendaciones</h1>
+        <p className="mt-1 text-muted">{roleLabel(session?.rol)}.</p>
       </div>
 
       <section className="surface p-6">
